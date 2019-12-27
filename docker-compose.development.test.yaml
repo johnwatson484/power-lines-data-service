@@ -1,0 +1,7 @@
+version: '3.7'
+services:
+  power-lines-data-service-test:
+    entrypoint: [ "dotnet", "watch", "test" ]
+    volumes:
+      - ./PowerLinesDataService.Tests:/PowerLinesDataService.Tests
+      - ./PowerLinesDataService:/PowerLinesDataService

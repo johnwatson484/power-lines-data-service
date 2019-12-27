@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  power-lines-data-service:
+    build: 
+      context: .
+      target: development-env
+    depends_on: 
+      - power-lines-data-service-postgres
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=power-lines-data-service;Port=5432;Database=power_lines_data;User Id=postgres;Password=postgres;"
+    volumes:
+      - ./PowerLinesDataService:/PowerLinesDataService
+    
+
+  power-lines-data-service-postgres:
+    image: postgres:11.4-alpine
+    environment:
+      POSTGRES_DB: power_lines_data
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+volumes:
+  postgres_data: {}

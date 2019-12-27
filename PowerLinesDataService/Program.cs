@@ -18,7 +18,7 @@ namespace PowerLinesDataService
         public static void Main(string[] args)
         {
             RegisterServices();
-            Console.WriteLine("Hello world!");
+            Console.WriteLine("Importing data");
             DisposeServices();
         }
 

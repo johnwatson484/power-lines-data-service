@@ -12,11 +12,25 @@ namespace PowerLinesDataService
     public static class Program
     {
         private static IServiceProvider serviceProvider;
+        private static IConfigurationRoot configuration;
+       
 
         public static void Main(string[] args)
         {
             RegisterServices();
+            Console.WriteLine("Hello world!");
             DisposeServices();
+        }
+
+        public static IConfigurationRoot GetConfiguration()
+        {
+            if(configuration != null)
+            {
+                return configuration;
+            }
+            RegisterServices();
+            
+            return configuration;
         }
 
         private static void RegisterServices()
@@ -25,12 +39,11 @@ namespace PowerLinesDataService
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-            IConfigurationRoot configuration = builder.Build();
+            configuration = builder.Build();
 
             var services = new ServiceCollection();
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>();
 
             serviceProvider = services.BuildServiceProvider();
         }

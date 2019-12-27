@@ -50,7 +50,7 @@ Running the above development container configuration will include a remote debu
   },
   "sourceFileMap": {
     "/PowerLinesDataService": "${workspaceFolder}"
-  },
+  }
 }
 ```
 The `${command:pickRemoteProcess}` will prompt for which process to connect to within the container.  

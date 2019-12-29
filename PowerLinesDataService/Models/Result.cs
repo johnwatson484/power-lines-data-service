@@ -4,8 +4,6 @@ namespace PowerLinesDataService.Models
 {
     public class Result
     {
-        public int ResultId { get; set; }
-
         public string Division { get; set; }
 
         public DateTime Date { get; set; }

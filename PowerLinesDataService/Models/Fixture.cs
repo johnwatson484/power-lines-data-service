@@ -4,8 +4,6 @@ namespace PowerLinesDataService.Models
 {
     public class Fixture
     {
-        public int FixtureId { get; set; }
-
         public string Division { get; set; }        
 
         public DateTime Date { get; set; }

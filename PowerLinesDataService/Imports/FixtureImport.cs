@@ -2,11 +2,11 @@ using System;
 
 namespace PowerLinesDataService.Imports
 {
-    public class FixtureImport : IImport
+    public class FixtureImport : Import
     {
-        public void Import(string[] args)
+        public override void Load(string[] args)
         {
-            
+            throw new NotImplementedException();
         }
     }
 }

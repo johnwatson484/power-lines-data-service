@@ -5,7 +5,7 @@ namespace PowerLinesDataService.Imports.Factory
 {
     public class ImportFactory
     {
-        public IImport GetImport(ImportType importType)
+        public Import GetImport(ImportType importType)
         {
             switch(importType)
             {

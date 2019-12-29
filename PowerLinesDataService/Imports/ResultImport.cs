@@ -2,11 +2,11 @@ using System;
 
 namespace PowerLinesDataService.Imports
 {
-    public class ResultImport : IImport
+    public class ResultImport : Import
     {
-        public void Import(string[] args)
+        public override void Load(string[] args)
         {
-            
+            throw new NotImplementedException();
         }
     }
 }

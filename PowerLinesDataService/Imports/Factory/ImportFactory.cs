@@ -1,5 +1,6 @@
 using System;
-using PowerLinesDataService.Imports;
+using PowerLinesDataService.Imports.Readers;
+using PowerLinesDataService.Common;
 
 namespace PowerLinesDataService.Imports.Factory
 {
@@ -10,9 +11,9 @@ namespace PowerLinesDataService.Imports.Factory
             switch(importType)
             {
                 case ImportType.Fixture:
-                    return new FixtureImport();
+                    return new FixtureImport(new File("", new FixtureReader()),"");
                 case ImportType.Result:
-                    return new ResultImport();
+                    return new ResultImport(new File("", new ResultReader()),"");
                 default:
                     throw new ArgumentException("Import type not found");
             }

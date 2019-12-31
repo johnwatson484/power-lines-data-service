@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using PowerLinesDataService.Common;
+using PowerLinesDataService.Models;
 
 namespace PowerLinesDataService.Imports
 {
@@ -16,8 +17,9 @@ namespace PowerLinesDataService.Imports
             {
                 using (var client = new WebClient())
                 {
-                    client.DownloadFile(string.Format(source), file.Filepath);
+                    client.DownloadFile(string.Format(source), file.Filepath);                    
                 }
+                var fixtures = file.ReadFileToList();
             }
             catch (Exception ex)
             {

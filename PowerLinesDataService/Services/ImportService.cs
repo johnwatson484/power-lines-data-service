@@ -23,7 +23,7 @@ namespace PowerLinesDataService.Services
 
             List<Import> imports = new List<Import>();
             imports.Add(factory.GetImport(ImportType.Fixture));
-            imports.Add(factory.GetImport(ImportType.Result));
+            // imports.Add(factory.GetImport(ImportType.Result));
 
             foreach(var import in imports)
             {

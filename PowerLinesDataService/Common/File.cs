@@ -22,7 +22,7 @@ namespace PowerLinesDataService.Common
             }
         }
 
-        public IList<object> ReadFileToList()
+        public dynamic ReadFileToList()
         {
             return reader.ReadToList(Filepath);
         }

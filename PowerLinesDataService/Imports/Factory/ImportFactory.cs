@@ -11,7 +11,9 @@ namespace PowerLinesDataService.Imports.Factory
             switch(importType)
             {
                 case ImportType.Fixture:
-                    return new FixtureImport(new File(string.Format("./ImportedFiles/Fixtures_{0}.csv", DateTime.Now.ToString("yyyyMMddHHmmss")), new FixtureReader()),"http://www.football-data.co.uk/fixtures.csv");
+                    return new FixtureImport(new File(string.Format("./ImportedFiles/Fixtures_{0}.csv", DateTime.Now.ToString("yyyyMMddHHmmss")),
+                    new FixtureReader()),
+                    "http://www.football-data.co.uk/fixtures.csv");
                 case ImportType.Result:
                     return new ResultImport(new File("", new ResultReader()),"");
                 default:

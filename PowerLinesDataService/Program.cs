@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
+using PowerLinesDataService.Services;
+using PowerLinesDataService.Common;
+using PowerLinesDataService.Imports.Factory;
 
 namespace PowerLinesDataService
 {
@@ -12,7 +15,13 @@ namespace PowerLinesDataService
         public static void Main(string[] args)
         {
             RegisterServices();
-            Console.WriteLine("Importing data");
+
+            var importService = new ImportService(
+                new Folder("./ImportedFiles"), 
+                serviceProvider.GetService<IImportFactory>());
+
+            importService.RunImports();
+            
             DisposeServices();
         }
 
@@ -25,6 +34,8 @@ namespace PowerLinesDataService
             IConfigurationRoot configuration = builder.Build();
 
             var services = new ServiceCollection();
+            services.AddScoped<IImportService, ImportService>();
+            services.AddScoped<IImportFactory, ImportFactory>();
             serviceProvider = services.BuildServiceProvider();
         }
 

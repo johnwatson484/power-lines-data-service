@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace PowerLinesDataService.Common
 {
-    public class File
+    public class File : IFile
     {
         public string Filepath { get; }
 

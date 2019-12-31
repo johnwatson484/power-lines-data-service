@@ -6,11 +6,11 @@ namespace PowerLinesDataService.Imports
 {
     public class FixtureImport : Import
     {
-        public FixtureImport(File file, string source) : base (file, source)
+        public FixtureImport(IFile file, string source) : base (file, source)
         {
         }
 
-        public override void Load(string[] args)
+        public override void Load()
         {
             try
             {

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace PowerLinesDataService.Common
 {
-    public class Folder
+    public class Folder : IFolder
     {
         private string folderPath;
 

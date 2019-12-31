@@ -7,14 +7,14 @@ namespace PowerLinesDataService.Imports
     {
         protected string source;
 
-        protected File file;
+        protected IFile file;
 
-        public Import(File file, string source)
+        public Import(IFile file, string source)
         {
             this.file = file;
             this.source = source;
         }
 
-        public abstract void Load(string[] args);
+        public abstract void Load();
     }
 }

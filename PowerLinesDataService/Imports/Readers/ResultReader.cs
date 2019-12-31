@@ -9,7 +9,7 @@ namespace PowerLinesDataService.Imports.Readers
     {
         public IList<object> ReadToList(string filepath)
         {
-            throw new NotImplementedException();
+            return new List<object>();
         }
     }
 }

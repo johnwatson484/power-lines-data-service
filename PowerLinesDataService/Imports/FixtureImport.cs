@@ -23,7 +23,7 @@ namespace PowerLinesDataService.Imports
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error uploading fixtures: {0}", ex);
+                Console.WriteLine("Error importing fixtures: {0}", ex);
             }
             finally
             {

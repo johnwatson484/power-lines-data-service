@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using PowerLinesDataService.Common;
 
 namespace PowerLinesDataService.Imports
@@ -11,7 +12,22 @@ namespace PowerLinesDataService.Imports
 
         public override void Load()
         {
-            
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(string.Format(source), file.Filepath);                    
+                }
+                var results = file.ReadFileToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error importing results: {0}", ex);
+            }
+            finally
+            {
+                file.DeleteFileIfExists();
+            }
         }
     }
 }

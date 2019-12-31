@@ -11,7 +11,7 @@ namespace PowerLinesDataService.Imports
 
         public override void Load()
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

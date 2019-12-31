@@ -4,6 +4,6 @@ namespace PowerLinesDataService.Common
 {
     public interface IReader
     {
-        dynamic ReadToList(string filepath);
+        IList<object> ReadToList(string filepath);
     }
 }

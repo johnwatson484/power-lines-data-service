@@ -4,12 +4,13 @@ using System.Globalization;
 using System.IO;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Models;
+using System.Linq;
 
 namespace PowerLinesDataService.Imports.Readers
 {
     public class FixtureReader : IReader
     {
-        public dynamic ReadToList(string filepath)
+        public IList<object> ReadToList(string filepath)
         {
             List<Fixture> fixtures = new List<Fixture>();
 
@@ -60,7 +61,7 @@ namespace PowerLinesDataService.Imports.Readers
                 }
             }
 
-            return fixtures;
+            return fixtures.ToList<object>();
         }
     }
 }

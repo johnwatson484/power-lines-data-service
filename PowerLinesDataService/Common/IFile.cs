@@ -8,7 +8,7 @@ namespace PowerLinesDataService.Common
 
         void DeleteFileIfExists();
 
-        dynamic ReadFileToList();
+        IList<object> ReadFileToList();
 
     }
 }

@@ -7,7 +7,7 @@ namespace PowerLinesDataService.Imports.Readers
 {
     public class ResultReader : IReader
     {
-        public dynamic ReadToList(string filepath)
+        public IList<object> ReadToList(string filepath)
         {
             throw new NotImplementedException();
         }

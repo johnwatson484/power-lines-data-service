@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Collections.Generic;
 using PowerLinesDataService.Common;
+using PowerLinesDataService.Models;
 
 namespace PowerLinesDataService.Imports
 {
@@ -13,7 +14,7 @@ namespace PowerLinesDataService.Imports
 
         public override void Load(string[] args)
         {
-            bool currentSeasonOnly = true;
+            bool currentSeasonOnly = false;
 
             int firstSeason = GetFirstSeasonYear(currentSeasonOnly);
             int lastSeason = GetLastSeasonYear();
@@ -28,7 +29,6 @@ namespace PowerLinesDataService.Imports
                         {
                             client.DownloadFile(string.Format(source, GetSeason(firstSeason % 100), league), file.Filepath);
                         }
-                        var results = file.ReadFileToList();
                     }
                     catch (Exception ex)
                     {

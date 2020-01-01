@@ -2,6 +2,6 @@ namespace PowerLinesDataService.Services
 {
     public interface IImportService
     {
-        void RunImports();
+        void RunImports(string[] args);
     }
 }

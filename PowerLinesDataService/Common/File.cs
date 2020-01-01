@@ -20,11 +20,11 @@ namespace PowerLinesDataService.Common
             {
                 System.IO.File.Delete(Filepath);
             }
-        }
+        }        
 
         public IList<object> ReadFileToList()
         {
-            return reader.ReadToList(Filepath);
+            return System.IO.File.Exists(Filepath) ? reader.ReadToList(Filepath) : new List<object>();
         }
     }
 }

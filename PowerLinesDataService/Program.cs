@@ -20,7 +20,7 @@ namespace PowerLinesDataService
                 new Folder("./ImportedFiles"), 
                 serviceProvider.GetService<IImportFactory>());
 
-            importService.RunImports();
+            importService.RunImports(args);
             
             DisposeServices();
         }

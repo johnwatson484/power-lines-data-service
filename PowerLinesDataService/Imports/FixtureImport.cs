@@ -11,7 +11,7 @@ namespace PowerLinesDataService.Imports
         {
         }
 
-        public override void Load()
+        public override void Load(string[] args)
         {
             try
             {

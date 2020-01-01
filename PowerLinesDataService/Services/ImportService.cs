@@ -17,7 +17,7 @@ namespace PowerLinesDataService.Services
             this.factory = factory;
         }
 
-        public void RunImports()
+        public void RunImports(string[] args)
         {
             folder.CreateFolderIfNotExists();
 
@@ -27,7 +27,7 @@ namespace PowerLinesDataService.Services
 
             foreach(var import in imports)
             {
-                import.Load();
+                import.Load(args);
             }
         }
     }

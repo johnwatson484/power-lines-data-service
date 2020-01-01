@@ -15,6 +15,6 @@ namespace PowerLinesDataService.Imports
             this.source = source;
         }
 
-        public abstract void Load();
+        public abstract void Load(string[] args);
     }
 }

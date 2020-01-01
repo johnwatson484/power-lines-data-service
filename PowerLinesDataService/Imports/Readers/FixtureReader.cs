@@ -12,37 +12,19 @@ namespace PowerLinesDataService.Imports.Readers
     {
         public IList<object> ReadToList(string filepath)
         {
-            List<Fixture> fixtures = new List<Fixture>();
-
             CultureInfo culture = new CultureInfo("en-GB");
+
+            List<Fixture> fixtures = new List<Fixture>();
 
             using (var reader = new StreamReader(filepath))
             {
                 var header = reader.ReadLine();
                 var headers = header.Split(',');
 
-                int homeAverage = -1;
-                int drawAverage = -1;
-                int awayAverage = -1;
-
-                for(int i = 0; i< headers.Length; i++)
-                {
-                    switch(headers[i])
-                    {
-                        case "AvgH":
-                            homeAverage = i;
-                            break;
-                        case "AvgD":
-                            drawAverage = i;
-                            break;
-                        case "AvgA":
-                            awayAverage = i;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                
+                int homeAverage = Array.IndexOf(headers, "AvgH");
+                int drawAverage = Array.IndexOf(headers, "AvgD");
+                int awayAverage = Array.IndexOf(headers, "AvgA");
+                                
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();

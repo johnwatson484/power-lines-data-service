@@ -13,6 +13,8 @@ namespace PowerLinesDataService.Imports
 
         public override void Load(string[] args)
         {
+            Console.WriteLine("Importing fixture");
+
             try
             {
                 using (var client = new WebClient())
@@ -29,6 +31,8 @@ namespace PowerLinesDataService.Imports
             {
                 file.DeleteFileIfExists();
             }
+
+            Console.WriteLine("Import complete");
         }
     }
 }

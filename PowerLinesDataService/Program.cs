@@ -21,7 +21,6 @@ namespace PowerLinesDataService
                 serviceProvider.GetService<IImportFactory>());
 
             importService.RunImports(args);
-            Console.WriteLine("Success");
             
             DisposeServices();
         }

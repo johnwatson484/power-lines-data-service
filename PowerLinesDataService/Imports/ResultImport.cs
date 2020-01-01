@@ -14,10 +14,10 @@ namespace PowerLinesDataService.Imports
 
         public override void Load(string[] args)
         {
-            bool currentSeasonOnly = false;
+            bool currentSeasonOnly = true;
 
-            int firstSeason = GetFirstSeasonYear(currentSeasonOnly);
-            int lastSeason = GetLastSeasonYear();
+            int firstSeason = GetFirstSeasonYear(DateTime.Now, currentSeasonOnly);
+            int lastSeason = GetLastSeasonYear(DateTime.Now);
 
             while (firstSeason < lastSeason)
             {
@@ -46,36 +46,30 @@ namespace PowerLinesDataService.Imports
 
         private string GetSeason(int firstYear)
         {
-            int secondYear = firstYear + 1;
-
-            return string.Format("{0}{1}", firstYear.ToString("D2"), secondYear.ToString("D2"));
+            return string.Format("{0}{1}", firstYear.ToString("D2"), (++firstYear).ToString("D2"));
         }
 
-        private int GetFirstSeasonYear(bool currentSeasonOnly = false)
+        private int GetFirstSeasonYear(DateTime currentDate, bool currentSeasonOnly = false)
         {
             if (!currentSeasonOnly)
             {
                 return 1993;
             }
 
-            DateTime current = DateTime.Now;
-
-            if (current.Month <= 5)
+            if (currentDate.Month <= 5)
             {
-                return current.Year - 1;
+                return currentDate.Year - 1;
             }
-            return current.Year;
+            return currentDate.Year;
         }
 
-        private int GetLastSeasonYear()
+        private int GetLastSeasonYear(DateTime currentDate)
         {
-            DateTime current = DateTime.Now;
-
-            if (current.Month <= 5)
+            if (currentDate.Month <= 5)
             {
-                return current.Year;
+                return currentDate.Year;
             }
-            return current.Year + 1;
+            return currentDate.Year + 1;
         }
 
         private List<string> leagues = new List<string>

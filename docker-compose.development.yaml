@@ -4,6 +4,7 @@ services:
     build: 
       context: .
       target: development-env
+    command: "-- -fixtures -results"
     volumes:
       - ./PowerLinesDataService:/PowerLinesDataService
 

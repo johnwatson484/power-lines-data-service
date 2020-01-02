@@ -3,30 +3,6 @@ services:
   power-lines-data-service:
     build: 
       context: .
-      target: development-env
-    depends_on: power-lines-message
+      target: development-env    
     volumes:
       - ./PowerLinesDataService:/PowerLinesDataService
-
-  power-lines-message:
-    container_name: power-lines-message
-    image: vromero/activemq-artemis:2.9.0-alpine
-    environment:
-      ARTEMIS_USERNAME: artemis
-      ARTEMIS_PASSWORD: artemis
-    ports:
-      - "8161:8161"
-      - "5672:5672"
-    volumes:
-      - message-queue-data:/var/lib/artemis/data
-      - message-queue-tmp:/var/lib/artemis/tmp
-      - message-queue-etc:/var/lib/artemis/etc
-      - message-queue-etc-override:/var/lib/artemis/etc-override
-      - message-queue-lock:/var/lib/artemis/lock
-
-volumes:
-  message-queue-data: {}
-  message-queue-tmp: {}
-  message-queue-etc: {}
-  message-queue-etc-override: {}
-  message-queue-lock: {}

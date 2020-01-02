@@ -27,6 +27,13 @@ docker-compose -f docker-compose.yaml -f docker-compose.development.yaml build
 docker-compose -f docker-compose.yaml -f docker-compose.development.yaml up
 ```
 
+The service is dependent on an AMQP 1.0 message broker. For development an ActiveMQ Artemis container is provided.
+```
+docker-compose -f docker-compose.yaml -f docker-compose.development.yaml -f docker-compose.external.yaml build
+docker-compose -f docker-compose.yaml -f docker-compose.development.yaml -f docker-compose.external.yaml up
+```
+
+
 ## Debug application in container
 Running the above development container configuration will include a remote debugger that can be connected to using the below example VS Code debug configuration.
 

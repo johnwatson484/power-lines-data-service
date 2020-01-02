@@ -13,7 +13,8 @@ namespace PowerLinesDataService
         private static IServiceProvider serviceProvider;       
 
         public static void Main(string[] args)
-        {
+        {   
+            Console.WriteLine("Starting service");
             RegisterServices();
 
             var importService = new ImportService(
@@ -23,6 +24,7 @@ namespace PowerLinesDataService
             importService.RunImports(args);
             
             DisposeServices();
+            Console.WriteLine("Stopping service");
         }
 
         private static void RegisterServices()

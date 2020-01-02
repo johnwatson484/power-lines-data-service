@@ -4,6 +4,7 @@ services:
     build: 
       context: .
       target: development-env
+    depends_on: power-lines-message
     volumes:
       - ./PowerLinesDataService:/PowerLinesDataService
 

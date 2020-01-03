@@ -4,7 +4,7 @@ services:
     depends_on: 
       - power-lines-message
     environment: 
-      MESSAGE_HOST: power-lines-message
+      Message__Host: power-lines-message
 
   power-lines-message:
     container_name: power-lines-message

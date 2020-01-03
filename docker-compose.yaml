@@ -6,8 +6,3 @@ services:
       target: production-env
     image: power-lines-data-service
     container_name: power-lines-data-service
-    environment: 
-      FIXTURE_MESSAGE_USERNAME: artemis
-      FIXTURE_MESSAGE_PASSWORD: artemis
-      RESULT_MESSAGE_USERNAME: artemis
-      RESULT_MESSAGE_PASSWORD: artemis

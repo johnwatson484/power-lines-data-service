@@ -1,5 +1,6 @@
 using System;
 using PowerLinesDataService.Common;
+using PowerLinesDataService.Messaging;
 
 namespace PowerLinesDataService.Imports
 {
@@ -9,10 +10,16 @@ namespace PowerLinesDataService.Imports
 
         protected IFile file;
 
-        public Import(IFile file, string source)
+        protected IConnection connection;
+
+        protected MessageConfig messageConfig;
+
+        public Import(string source, IFile file, IConnection connection, MessageConfig messageConfig)
         {
-            this.file = file;
             this.source = source;
+            this.file = file;
+            this.connection = connection;
+            this.messageConfig = messageConfig;
         }
 
         public abstract void Load(string[] args);

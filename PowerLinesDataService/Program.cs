@@ -2,21 +2,25 @@
 using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration.Binder;
 using PowerLinesDataService.Services;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Imports.Factory;
-using System.Threading.Tasks;
+using PowerLinesDataService.Messaging;
 
 namespace PowerLinesDataService
 {
     public static class Program
     {
-        private static IServiceProvider serviceProvider;       
+        private static IServiceProvider serviceProvider;   
+        private static IConfigurationRoot configuration;    
 
         public static void Main(string[] args)
         {   
             Console.WriteLine("Starting service");
             RegisterServices();
+
+            
 
             var importService = new ImportService(
                 new Folder("./ImportedFiles"), 
@@ -34,9 +38,12 @@ namespace PowerLinesDataService
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-            IConfigurationRoot configuration = builder.Build();
+            configuration = builder.Build();
+
+            var messageConfig = configuration.GetSection("Message").Get<MessageConfig>();
 
             var services = new ServiceCollection();
+            services.AddSingleton(messageConfig);
             services.AddScoped<IImportService, ImportService>();
             services.AddScoped<IImportFactory, ImportFactory>();
             serviceProvider = services.BuildServiceProvider();

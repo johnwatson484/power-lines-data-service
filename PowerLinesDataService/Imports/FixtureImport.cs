@@ -1,13 +1,15 @@
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using PowerLinesDataService.Common;
+using PowerLinesDataService.Messaging;
 using PowerLinesDataService.Models;
 
 namespace PowerLinesDataService.Imports
 {
     public class FixtureImport : Import
     {
-        public FixtureImport(IFile file, string source) : base (file, source)
+        public FixtureImport(string source, IFile file, IConnection connection, MessageConfig messageConfig) : base (source, file, connection, messageConfig)
         {
         }
 
@@ -22,6 +24,14 @@ namespace PowerLinesDataService.Imports
                     client.DownloadFile(string.Format(source), file.Filepath);                    
                 }
                 var fixtures = file.ReadFileToList();
+                if(fixtures.Count > 0)
+                {
+                    Task.Run(()=> connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.FixtureUsername, messageConfig.FixturePassword).ToString(), messageConfig.FixtureQueue)).Wait();
+                    foreach(var fixture in fixtures)
+                    {
+                        connection.SendMessage(fixture);
+                    }
+                }
             }
             catch (Exception ex)
             {

@@ -9,6 +9,6 @@ namespace PowerLinesDataService.Messaging
 
         void CloseConnection();
 
-        void SendMessage(object message);
+        void SendMessage(object obj);
     }
 }

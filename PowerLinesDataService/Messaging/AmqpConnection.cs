@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Amqp;
+using Amqp.Framing;
+using Newtonsoft.Json;
 
 namespace PowerLinesDataService.Messaging
 {
@@ -10,18 +12,14 @@ namespace PowerLinesDataService.Messaging
         protected Address brokerAddr;
         protected Connection connection;
         protected Session session;
-
-        protected SenderLink sender;     
+        protected SenderLink sender;
 
         public async Task CreateConnectionToQueue(string brokerUrl, string queue)
         {
-            if(factory == null)
+            if (factory == null)
             {
                 ConfigureConnectionFactory();
             }
-
-            brokerUrl = "amqp://artemis:artemis@power-lines-message:5672";
-            
             brokerAddr = new Address(brokerUrl);
             connection = await factory.CreateAsync(brokerAddr);
             session = new Session(connection);
@@ -32,7 +30,7 @@ namespace PowerLinesDataService.Messaging
         {
             factory = new ConnectionFactory();
             factory.AMQP.ContainerId = "data-service-container";
-        }  
+        }
 
         public void CloseConnection()
         {
@@ -41,10 +39,11 @@ namespace PowerLinesDataService.Messaging
             connection.Close();
         }
 
-        public void SendMessage(object message)
+        public void SendMessage(object obj)
         {
-            Console.WriteLine("Sending message: {0}", message);
-            sender.Send(new Message(message));
+            var body = JsonConvert.SerializeObject(obj);
+            Console.WriteLine("Sending message: {0}", body);
+            sender.Send(new Message(body));
             Console.WriteLine("Message sent");
         }
     }

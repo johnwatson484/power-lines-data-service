@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Models;
 using System.Linq;
+using PowerLinesDataService.Messaging;
 
 namespace PowerLinesDataService.Imports
 {
     public class ResultImport : Import
     {
-        public ResultImport(IFile file, string source) : base(file, source)
+        public ResultImport(string source, IFile file, IConnection connection, MessageConfig messageConfig) : base (source, file, connection, messageConfig)
         {
         }
 

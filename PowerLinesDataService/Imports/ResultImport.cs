@@ -5,12 +5,13 @@ using PowerLinesDataService.Common;
 using PowerLinesDataService.Models;
 using System.Linq;
 using PowerLinesDataService.Messaging;
+using System.Threading.Tasks;
 
 namespace PowerLinesDataService.Imports
 {
     public class ResultImport : Import
     {
-        public ResultImport(string source, IFile file, IConnection connection, MessageConfig messageConfig) : base (source, file, connection, messageConfig)
+        public ResultImport(string source, IFile file, IConnection connection, MessageConfig messageConfig) : base(source, file, connection, messageConfig)
         {
         }
 
@@ -32,6 +33,15 @@ namespace PowerLinesDataService.Imports
                         using (var client = new WebClient())
                         {
                             client.DownloadFile(string.Format(source, GetSeasonYears(firstSeason % 100), league), file.Filepath);
+                        }
+                        var results = file.ReadFileToList();
+                        if (results.Count > 0)
+                        {
+                            Task.Run(() => connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.ResultUsername, messageConfig.ResultPassword).ToString(), messageConfig.ResultQueue)).Wait();
+                            foreach (var result in results)
+                            {
+                                connection.SendMessage(result);
+                            }
                         }
                     }
                     catch (Exception ex)

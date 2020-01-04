@@ -17,31 +17,15 @@ namespace PowerLinesDataService.Imports
         public override void Load(string[] args)
         {
             Console.WriteLine("Importing fixtures");
-            CreateConnectionToQueue();
-
-            try
-            {
-                using (var client = new WebClient())
-                {
-                    client.DownloadFile(string.Format(source), file.Filepath);
-                }
-                SendToQueue(file.ReadFileToList());
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error importing fixtures: {0}", ex);
-            }
-            finally
-            {
-                file.DeleteFileIfExists();
-            }
-
-            Console.WriteLine("Import complete");
+            base.Load(args);
         }
 
         public override void CreateConnectionToQueue()
         {
-            Task.Run(() => connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.FixtureUsername, messageConfig.FixturePassword).ToString(), messageConfig.FixtureQueue)).Wait();
+            Task.Run(() =>
+                connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.FixtureUsername, messageConfig.FixturePassword).ToString(),
+                messageConfig.FixtureQueue))
+            .Wait();
         }
     }
 }

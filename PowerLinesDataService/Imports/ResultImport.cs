@@ -40,7 +40,7 @@ namespace PowerLinesDataService.Imports
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error importing results: {0}", ex);
+                        Console.WriteLine("Error importing: {0}", ex);
                     }
                     finally
                     {

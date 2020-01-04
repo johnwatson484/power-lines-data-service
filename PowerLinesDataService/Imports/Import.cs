@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Messaging;
 
@@ -23,7 +24,29 @@ namespace PowerLinesDataService.Imports
             this.messageConfig = messageConfig;
         }
 
-        public abstract void Load(string[] args);
+        public virtual void Load(string[] args)
+        {            
+            CreateConnectionToQueue();
+
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(string.Format(source), file.Filepath);
+                }
+                SendToQueue(file.ReadFileToList());
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error importing: {0}", ex);
+            }
+            finally
+            {
+                file.DeleteFileIfExists();
+            }
+
+            Console.WriteLine("Import complete");
+        }
 
         public abstract void CreateConnectionToQueue();
 

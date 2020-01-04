@@ -19,12 +19,12 @@ namespace PowerLinesDataService.Imports
         {
             Console.WriteLine("Importing results");
 
-            CreateConnectionToQueue();
-
             bool currentSeasonOnly = !args.Contains("-all");
 
             int firstSeason = GetFirstSeasonYear(DateTime.Now, currentSeasonOnly);
             int lastSeason = GetLastSeasonYear(DateTime.Now);
+
+            CreateConnectionToQueue();
 
             while (firstSeason < lastSeason)
             {
@@ -110,7 +110,10 @@ namespace PowerLinesDataService.Imports
 
         public override void CreateConnectionToQueue()
         {
-            Task.Run(() => connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.ResultUsername, messageConfig.ResultPassword).ToString(), messageConfig.ResultQueue)).Wait();
+            Task.Run(() => 
+                connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.ResultUsername, messageConfig.ResultPassword).ToString(), 
+                messageConfig.ResultQueue))
+            .Wait();
         }
     }
 }

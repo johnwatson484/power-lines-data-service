@@ -6,3 +6,8 @@ services:
       target: development-env    
     volumes:
       - ./PowerLinesDataService:/PowerLinesDataService
+
+networks:
+  default:
+    external:
+      name: power-lines

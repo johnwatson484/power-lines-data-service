@@ -20,9 +20,10 @@ docker-compose up
 ```
 
 ## Develop application in container
-The application will be accessible on port `5000`.
+The application is dependent on an existing Docker network named `power-lines`.
 
 ```
+docker network create power-lines
 docker-compose -f docker-compose.yaml -f docker-compose.development.yaml build
 docker-compose -f docker-compose.yaml -f docker-compose.development.yaml up
 ```

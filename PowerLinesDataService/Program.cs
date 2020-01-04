@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration.Binder;
 using PowerLinesDataService.Services;
@@ -36,7 +37,9 @@ namespace PowerLinesDataService
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+                
 
             configuration = builder.Build();
 

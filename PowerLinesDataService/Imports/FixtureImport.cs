@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Messaging;
-using PowerLinesDataService.Models;
-
 namespace PowerLinesDataService.Imports
 {
     public class FixtureImport : Import

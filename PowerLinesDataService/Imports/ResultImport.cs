@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Collections.Generic;
 using PowerLinesDataService.Common;
-using PowerLinesDataService.Models;
 using System.Linq;
 using PowerLinesDataService.Messaging;
 using System.Threading.Tasks;

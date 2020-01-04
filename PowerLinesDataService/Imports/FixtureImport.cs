@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using PowerLinesDataService.Common;
@@ -9,29 +10,22 @@ namespace PowerLinesDataService.Imports
 {
     public class FixtureImport : Import
     {
-        public FixtureImport(string source, IFile file, IConnection connection, MessageConfig messageConfig) : base (source, file, connection, messageConfig)
+        public FixtureImport(string source, IFile file, IConnection connection, MessageConfig messageConfig) : base(source, file, connection, messageConfig)
         {
         }
 
         public override void Load(string[] args)
         {
-            Console.WriteLine("Importing fixture");
+            Console.WriteLine("Importing fixtures");
+            CreateConnectionToQueue();
 
             try
             {
                 using (var client = new WebClient())
                 {
-                    client.DownloadFile(string.Format(source), file.Filepath);                    
+                    client.DownloadFile(string.Format(source), file.Filepath);
                 }
-                var fixtures = file.ReadFileToList();
-                if(fixtures.Count > 0)
-                {
-                    Task.Run(()=> connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.FixtureUsername, messageConfig.FixturePassword).ToString(), messageConfig.FixtureQueue)).Wait();
-                    foreach(var fixture in fixtures)
-                    {
-                        connection.SendMessage(fixture);
-                    }
-                }
+                SendToQueue(file.ReadFileToList());
             }
             catch (Exception ex)
             {
@@ -43,6 +37,11 @@ namespace PowerLinesDataService.Imports
             }
 
             Console.WriteLine("Import complete");
+        }
+
+        public override void CreateConnectionToQueue()
+        {
+            Task.Run(() => connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.FixtureUsername, messageConfig.FixturePassword).ToString(), messageConfig.FixtureQueue)).Wait();
         }
     }
 }

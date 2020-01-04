@@ -19,6 +19,8 @@ namespace PowerLinesDataService.Imports
         {
             Console.WriteLine("Importing results");
 
+            CreateConnectionToQueue();
+
             bool currentSeasonOnly = !args.Contains("-all");
 
             int firstSeason = GetFirstSeasonYear(DateTime.Now, currentSeasonOnly);
@@ -34,15 +36,7 @@ namespace PowerLinesDataService.Imports
                         {
                             client.DownloadFile(string.Format(source, GetSeasonYears(firstSeason % 100), league), file.Filepath);
                         }
-                        var results = file.ReadFileToList();
-                        if (results.Count > 0)
-                        {
-                            Task.Run(() => connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.ResultUsername, messageConfig.ResultPassword).ToString(), messageConfig.ResultQueue)).Wait();
-                            foreach (var result in results)
-                            {
-                                connection.SendMessage(result);
-                            }
-                        }
+                        SendToQueue(file.ReadFileToList());
                     }
                     catch (Exception ex)
                     {
@@ -113,5 +107,10 @@ namespace PowerLinesDataService.Imports
             "T1",
             "G1"
         };
+
+        public override void CreateConnectionToQueue()
+        {
+            Task.Run(() => connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.ResultUsername, messageConfig.ResultPassword).ToString(), messageConfig.ResultQueue)).Wait();
+        }
     }
 }

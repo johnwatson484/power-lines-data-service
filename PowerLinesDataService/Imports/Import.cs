@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Messaging;
 
@@ -23,5 +24,15 @@ namespace PowerLinesDataService.Imports
         }
 
         public abstract void Load(string[] args);
+
+        public abstract void CreateConnectionToQueue();
+
+        public virtual void SendToQueue(IList<object> items)
+        {
+            foreach (var item in items)
+            {
+                connection.SendMessage(item);
+            }
+        }
     }
 }

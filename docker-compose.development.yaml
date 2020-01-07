@@ -3,7 +3,9 @@ services:
   power-lines-data-service:
     build: 
       context: .
-      target: development-env    
+      target: development-env
+    environment: 
+      Message__Host: power-lines-message  
     volumes:
       - ./PowerLinesDataService:/PowerLinesDataService
 

@@ -19,9 +19,7 @@ namespace PowerLinesDataService
         public static void Main(string[] args)
         {   
             Console.WriteLine("Starting service");
-            RegisterServices();
-
-            
+            RegisterServices();            
 
             var importService = new ImportService(
                 new Folder("./ImportedFiles"), 

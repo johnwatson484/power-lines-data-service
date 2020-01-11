@@ -35,4 +35,6 @@ WORKDIR /app
 COPY --from=build-env /app/out .
 RUN chown -R www-data:www-data /app
 USER www-data
+ENV ASPNETCORE_URLS=http://*:8080
+EXPOSE 8080
 ENTRYPOINT ["dotnet", "PowerLinesDataService.dll"]

@@ -36,30 +36,8 @@ docker-compose -f docker-compose.yaml -f docker-compose.development.yaml -f dock
 
 
 ## Debug application in container
-Running the above development container configuration will include a remote debugger that can be connected to using the below example VS Code debug configuration.
+Running the above development container configuration will include a remote debugger that can be connected to using the example VS Code debug configuration within `./vscode`.
 
-```
-{
-  "name": ".NET Core Docker Attach",
-  "type": "coreclr",
-  "request": "attach",
-  "processId": "${command:pickRemoteProcess}",
-  "pipeTransport": {
-    "pipeProgram": "docker",
-    "pipeArgs": [
-      "exec",
-      "-i",
-      "power-lines-data-service"
-    ],
-    "debuggerPath": "/vsdbg/vsdbg",
-    "pipeCwd": "${workspaceRoot}",
-    "quoteArgs": false
-  },
-  "sourceFileMap": {
-    "/PowerLinesDataService": "${workspaceFolder}"
-  }
-}
-```
 The `${command:pickRemoteProcess}` will prompt for which process to connect to within the container.  
 
 Note that if this will not work if there is a space in the filepath to the VS Code extensions.  In that scenario the process Id should be manually added to the debug config.  The process Id can be found by running the below command.

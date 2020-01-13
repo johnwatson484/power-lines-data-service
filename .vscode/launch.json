@@ -21,7 +21,7 @@
         "quoteArgs": false
       },
       "sourceFileMap": {
-        "/PowerLinesDataService": "${workspaceFolder}"
+        "/PowerLinesDataService": "${workspaceFolder}/PowerLinesDataService"
       }
     }
   ]

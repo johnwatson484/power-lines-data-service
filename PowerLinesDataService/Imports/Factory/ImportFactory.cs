@@ -7,7 +7,7 @@ namespace PowerLinesDataService.Imports.Factory
 {
     public class ImportFactory : IImportFactory
     {
-        IConnection connection;   
+        ISender sender;   
 
         MessageConfig messageConfig;
 
@@ -25,13 +25,13 @@ namespace PowerLinesDataService.Imports.Factory
                 case ImportType.Fixture:
                     return new FixtureImport("http://www.football-data.co.uk/fixtures.csv",
                         new File(string.Format("./ImportedFiles/Fixtures_{0}.csv", DateTime.Now.ToString("yyyyMMddHHmmss")), new FixtureReader()),
-                        connection,
+                        sender,
                         messageConfig
                         );
                 case ImportType.Result:
                     return new ResultImport("http://www.football-data.co.uk/mmz4281/{0}/{1}.csv",
                         new File(string.Format("./ImportedFiles/Results_{0}.csv", DateTime.Now.ToString("yyyyMMddHHmmss")), new ResultReader()),
-                        connection,
+                        sender,
                         messageConfig);
                 default:
                     throw new ArgumentException("Import type not found");
@@ -40,9 +40,9 @@ namespace PowerLinesDataService.Imports.Factory
 
         private void InitializeConnection()
         {
-            if(connection == null)
+            if(sender == null)
             {
-                connection = new AmqpConnection();
+                sender = new Sender();
             }
         }
     }

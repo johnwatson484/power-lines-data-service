@@ -10,7 +10,7 @@ namespace PowerLinesDataService.Imports
 {
     public class ResultImport : Import
     {
-        public ResultImport(string source, IFile file, IConnection connection, MessageConfig messageConfig) : base(source, file, connection, messageConfig)
+        public ResultImport(string source, IFile file, ISender sender, MessageConfig messageConfig) : base(source, file, sender, messageConfig)
         {
         }
 
@@ -18,7 +18,7 @@ namespace PowerLinesDataService.Imports
         {
             Console.WriteLine("Importing results");
 
-            bool currentSeasonOnly = !args.Contains("-all");
+            bool currentSeasonOnly = !args.Contains("--all");
 
             int firstSeason = GetFirstSeasonYear(DateTime.Now, currentSeasonOnly);
             int lastSeason = GetLastSeasonYear(DateTime.Now);
@@ -110,8 +110,7 @@ namespace PowerLinesDataService.Imports
         public override void CreateConnectionToQueue()
         {
             Task.Run(() => 
-                connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.ResultUsername, messageConfig.ResultPassword).ToString(), 
-                messageConfig.ResultQueue))
+                sender.CreateConnectionToQueue(messageConfig.Host, messageConfig.ResultQueue))
             .Wait();
         }
     }

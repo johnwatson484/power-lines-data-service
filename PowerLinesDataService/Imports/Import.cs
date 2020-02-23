@@ -12,15 +12,15 @@ namespace PowerLinesDataService.Imports
 
         protected IFile file;
 
-        protected IConnection connection;
+        protected ISender sender;
 
         protected MessageConfig messageConfig;
 
-        public Import(string source, IFile file, IConnection connection, MessageConfig messageConfig)
+        public Import(string source, IFile file, ISender sender, MessageConfig messageConfig)
         {
             this.source = source;
             this.file = file;
-            this.connection = connection;
+            this.sender = sender;
             this.messageConfig = messageConfig;
         }
 
@@ -54,7 +54,7 @@ namespace PowerLinesDataService.Imports
         {
             foreach (var item in items)
             {
-                connection.SendMessage(item);
+                sender.SendMessage(item);
             }
         }
     }

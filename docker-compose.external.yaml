@@ -6,23 +6,13 @@ services:
 
   power-lines-message:
     container_name: power-lines-message
-    image: vromero/activemq-artemis:2.9.0-alpine
+    image: "rabbitmq:3-management-alpine"
+    hostname: "rabbitmq"
     environment:
-      ARTEMIS_USERNAME: artemis
-      ARTEMIS_PASSWORD: artemis
+      RABBITMQ_ERLANG_COOKIE: "rabbitmq"
+    #  RABBITMQ_DEFAULT_USER: "rabbitmq"
+    #  RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
     ports:
-      - "8161:8161"
+      - "15672:15672"
       - "5672:5672"
-    volumes:
-      - message-queue-data:/var/lib/artemis/data
-      - message-queue-tmp:/var/lib/artemis/tmp
-      - message-queue-etc:/var/lib/artemis/etc
-      - message-queue-etc-override:/var/lib/artemis/etc-override
-      - message-queue-lock:/var/lib/artemis/lock
-
-volumes:
-  message-queue-data: {}
-  message-queue-tmp: {}
-  message-queue-etc: {}
-  message-queue-etc-override: {}
-  message-queue-lock: {}

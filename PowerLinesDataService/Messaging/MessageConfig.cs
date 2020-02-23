@@ -9,8 +9,6 @@ namespace PowerLinesDataService.Messaging
 
         public int Port { get; set; }
 
-        public string Transport { get; set; }
-
         public string FixtureQueue { get; set; }
 
         public string FixtureUsername { get; set; }

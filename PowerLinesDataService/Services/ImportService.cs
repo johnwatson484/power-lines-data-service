@@ -24,12 +24,12 @@ namespace PowerLinesDataService.Services
 
             List<Import> imports = new List<Import>();
 
-            if(args.Contains("-fixtures"))
+            if(args.Contains("--fixtures"))
             {
                 imports.Add(factory.GetImport(ImportType.Fixture));
             }
 
-            if(args.Contains("-results"))
+            if(args.Contains("--results"))
             {
                 imports.Add(factory.GetImport(ImportType.Result));
             }

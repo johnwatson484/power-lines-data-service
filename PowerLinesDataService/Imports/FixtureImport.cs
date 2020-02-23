@@ -6,7 +6,7 @@ namespace PowerLinesDataService.Imports
 {
     public class FixtureImport : Import
     {
-        public FixtureImport(string source, IFile file, IConnection connection, MessageConfig messageConfig) : base(source, file, connection, messageConfig)
+        public FixtureImport(string source, IFile file, ISender sender, MessageConfig messageConfig) : base(source, file, sender, messageConfig)
         {
         }
 
@@ -19,8 +19,7 @@ namespace PowerLinesDataService.Imports
         public override void CreateConnectionToQueue()
         {
             Task.Run(() =>
-                connection.CreateConnectionToQueue(new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.FixtureUsername, messageConfig.FixturePassword).ToString(),
-                messageConfig.FixtureQueue))
+                sender.CreateConnectionToQueue(messageConfig.Host, messageConfig.FixtureQueue))
             .Wait();
         }
     }

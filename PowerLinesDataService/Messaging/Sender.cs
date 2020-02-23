@@ -38,7 +38,7 @@ namespace PowerLinesDataService.Messaging
                                  routingKey: queue,
                                  basicProperties: null,
                                  body: body);
-            Console.WriteLine(" [x] Sent {0}", message);
+            Console.WriteLine("Sent {0}", message);
         }
 
         private void CreateConnectionFactory()

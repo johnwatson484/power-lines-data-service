@@ -7,11 +7,11 @@ services:
   power-lines-message:
     container_name: power-lines-message
     image: "rabbitmq:3-management-alpine"
-    hostname: "rabbitmq"
+    hostname: "power-lines-message"
     environment:
       RABBITMQ_ERLANG_COOKIE: "rabbitmq"
-    #  RABBITMQ_DEFAULT_USER: "rabbitmq"
-    #  RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
       RABBITMQ_DEFAULT_VHOST: "/"
     ports:
       - "15672:15672"

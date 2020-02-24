@@ -10,15 +10,12 @@ namespace PowerLinesDataService.Messaging
         protected ConnectionFactory connectionFactory;
         protected RabbitMQ.Client.IConnection connection;
         protected IModel channel;
-        protected string hostname;
         protected string queue;
 
-        public void CreateConnectionToQueue(string hostname, string queue)
+        public void CreateConnectionToQueue(string brokerUrl, string queue)
         {
-            this.hostname = hostname;
             this.queue = queue;
-
-            CreateConnectionFactory();
+            CreateConnectionFactory(brokerUrl);
             CreateConnection();
             CreateChannel();
             CreateQueue();
@@ -41,9 +38,11 @@ namespace PowerLinesDataService.Messaging
             Console.WriteLine("Sent {0}", message);
         }
 
-        private void CreateConnectionFactory()
+        private void CreateConnectionFactory(string brokerUrl)
         {
-            connectionFactory = new ConnectionFactory() { HostName = hostname };
+            connectionFactory = new ConnectionFactory() {
+                Uri = new Uri(brokerUrl)
+            };
         }
 
         private void CreateConnection()

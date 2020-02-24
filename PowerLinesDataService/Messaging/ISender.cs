@@ -2,7 +2,7 @@ namespace PowerLinesDataService.Messaging
 {
     public interface ISender
     {
-        void CreateConnectionToQueue(string hostname, string queue);
+        void CreateConnectionToQueue(string brokerUrl, string queue);
 
         void CloseConnection();
 

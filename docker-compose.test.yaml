@@ -2,6 +2,7 @@ version: '3.7'
 services:
   power-lines-data-service:
     build: 
+      context: .
       target: development
     image: power-lines-data-service-test
     container_name: power-lines-data-service-test

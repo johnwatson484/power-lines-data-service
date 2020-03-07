@@ -44,7 +44,7 @@ steps:
     inputs:
       targetType: 'inline'
       script: |
-        docker-compose build
+        docker-compose -f docker-compose.yaml build
   
   - task: SonarQubeAnalyze@4
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

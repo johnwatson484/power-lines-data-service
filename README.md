@@ -18,8 +18,6 @@ docker-compose -f docker-compose.yaml up
 ```
 
 ## Develop application in container
-The application is dependent on an existing Docker network named `power-lines`.  
-
 The service is dependent on a message broker. For development a RabbitMQ container is provided.
 
 ```

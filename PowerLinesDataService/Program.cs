@@ -36,8 +36,7 @@ namespace PowerLinesDataService
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
-                
+                .AddEnvironmentVariables();                
 
             configuration = builder.Build();
 
@@ -45,8 +44,8 @@ namespace PowerLinesDataService
 
             var services = new ServiceCollection();
             services.AddSingleton(messageConfig);
-            services.AddScoped<IImportService, ImportService>();
             services.AddScoped<IImportFactory, ImportFactory>();
+            services.AddScoped<IImportService, ImportService>();
             serviceProvider = services.BuildServiceProvider();
         }
 

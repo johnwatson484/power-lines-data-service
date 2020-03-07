@@ -11,17 +11,13 @@
       "processId": "${command:pickRemoteProcess}",
       "pipeTransport": {
         "pipeProgram": "docker",
-        "pipeArgs": [
-          "exec",
-          "-i",
-          "power-lines-data-service"
-        ],
+        "pipeArgs": ["exec", "-i", "power-lines-data-service"],
         "debuggerPath": "/vsdbg/vsdbg",
         "pipeCwd": "${workspaceRoot}",
         "quoteArgs": false
       },
       "sourceFileMap": {
-        "/PowerLinesDataService": "${workspaceFolder}/PowerLinesDataService"
+        "/home/dotnet": "${workspaceFolder}"
       }
     }
   ]

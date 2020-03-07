@@ -1,8 +1,8 @@
 version: '3.7'
 services:
-  power-lines-data-service-test:
+  power-lines-data-service:
     build: 
-      context: .
-      target: test-env
+      target: development
     image: power-lines-data-service-test
     container_name: power-lines-data-service-test
+    entrypoint: dotnet test ./PowerLinesDataService.Tests/PowerLinesDataService.Tests.csproj

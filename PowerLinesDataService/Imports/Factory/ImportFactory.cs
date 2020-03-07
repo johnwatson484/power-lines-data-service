@@ -14,10 +14,12 @@ namespace PowerLinesDataService.Imports.Factory
         public ImportFactory(MessageConfig messageConfig)
         {
             this.messageConfig = messageConfig;
+            Console.WriteLine("{0} {1} {2} {3}", messageConfig.Host, messageConfig.Port, messageConfig.FixtureUsername, messageConfig.FixturePassword);
         }     
 
         public Import GetImport(ImportType importType)
         {
+            Console.WriteLine("{0} {1} {2} {3}", messageConfig.Host, messageConfig.Port, messageConfig.FixtureUsername, messageConfig.FixturePassword);
             InitializeConnection();
 
             switch(importType)

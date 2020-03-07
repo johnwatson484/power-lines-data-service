@@ -19,7 +19,7 @@ namespace PowerLinesDataService.Messaging
 
         public override string ToString()
         {
-            return string.Format("amqp://{0}:{1}@{2}:{3}/", username, password, host, port);
+            return string.Format("amqp://{0}:{1}@{2}:{3}/", username, password, host, port);            
         }
     }
 }

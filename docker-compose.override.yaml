@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+  power-lines-data-service:
+    build:
+      target: development
+    environment: 
+      Message__Host: power-lines-message
+      Message__Port: 5672
+      Message__FixtureQueue: fixtures
+      Message__FixtureUsername: rabbitmq
+      Message__FixturePassword: rabbitmq
+      Message__ResultQueue: results
+      Message__ResultUsername: rabbitmq
+      Message__ResultPassword: rabbitmq
+    depends_on: 
+      - power-lines-message
+    volumes:
+      - ./PowerLinesDataService:/home/dotnet/PowerLinesDataService
+      - ./PowerLinesDataService.Tests:/home/dotnet/PowerLinesDataService.Tests
+
+  power-lines-message:
+    image: rabbitmq:3-management-alpine
+    container_name: power-lines-message
+    hostname: power-lines-message
+    environment:
+      RABBITMQ_ERLANG_COOKIE: rabbitmq
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
+networks:
+  default:
+    external:
+      name: power-lines

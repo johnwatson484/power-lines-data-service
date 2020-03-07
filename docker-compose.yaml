@@ -3,6 +3,6 @@ services:
   power-lines-data-service:
     build:
       context: .
-      target: production-env
+      target: production
     image: power-lines-data-service
     container_name: power-lines-data-service

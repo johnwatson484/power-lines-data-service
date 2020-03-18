@@ -19,7 +19,6 @@ namespace PowerLinesDataService.Imports.Factory
 
         public Import GetImport(ImportType importType)
         {
-            Console.WriteLine("{0} {1} {2} {3}", messageConfig.Host, messageConfig.Port, messageConfig.FixtureUsername, messageConfig.FixturePassword);
             InitializeConnection();
 
             switch(importType)

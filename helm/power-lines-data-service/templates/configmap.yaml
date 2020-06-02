@@ -1,0 +1,6 @@
+{{- include "helm-library.configmap" (list . "sugar-free-healthy-diet.configmap") -}}
+{{- define "sugar-free-healthy-diet.configmap" -}}
+data:  
+  COMPlus_EnableDiagnostics: {{ quote .Values.container.comPlusEnableDiagnostics }}
+  ASPNETCORE_ENVIRONMENT: {{ quote .Values.environment }}
+{{- end -}}

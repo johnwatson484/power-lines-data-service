@@ -1,0 +1,8 @@
+{{- include "helm-library.deployment" (list . "sugar-free-healthy-diet.deployment") -}}
+{{- define "sugar-free-healthy-diet.deployment" -}}
+spec:
+  template:
+    spec:
+      containers:
+      - {{ include "helm-library.container" (list . "sugar-free-healthy-diet.container") }}
+{{- end -}}

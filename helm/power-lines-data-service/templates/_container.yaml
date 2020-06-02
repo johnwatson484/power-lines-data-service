@@ -1,0 +1,6 @@
+{{- define "sugar-free-healthy-diet.container" -}}
+name: {{ quote .Values.name }}
+envFrom:
+- configMapRef:
+    name: {{ .Values.name }}
+{{- end -}}

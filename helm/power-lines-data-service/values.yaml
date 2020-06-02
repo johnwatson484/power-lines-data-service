@@ -1,0 +1,22 @@
+environment: development
+name: power-lines-data-service
+image: power-lines-data-service
+
+container:
+  imagePullPolicy: IfNotPresent
+  requestMemory: 60Mi
+  requestCpu: 60m
+  limitMemory: 250Mi
+  limitCpu: 250m
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+  comPlusEnableDiagnostics: 0
+
+deployment:
+  restartPolicy: Always
+  replicas: 1
+  minReadySeconds: 5
+  redeployOnChange: update this field to force a change
+  imagePullSecret:
+  runAsNonRoot: true
+  runAsUser: 1000

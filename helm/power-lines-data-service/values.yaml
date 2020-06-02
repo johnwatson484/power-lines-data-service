@@ -12,6 +12,16 @@ container:
   allowPrivilegeEscalation: false
   comPlusEnableDiagnostics: 0
 
+message:
+  host: host.docker.internal
+  port: 5672
+  fixtureQueue: power-lines-fixtures
+  fixtureUsername: rabbitmq
+  fixturePassword: rabbitmq
+  resultQueue: power-lines-results
+  resultUsername: rabbitmq
+  resultPassword: rabbitmq
+
 deployment:
   restartPolicy: Always
   replicas: 1

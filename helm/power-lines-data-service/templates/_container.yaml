@@ -1,4 +1,4 @@
-{{- define "sugar-free-healthy-diet.container" -}}
+{{- define "power-lines-data-service.container" -}}
 name: {{ quote .Values.name }}
 envFrom:
 - configMapRef:

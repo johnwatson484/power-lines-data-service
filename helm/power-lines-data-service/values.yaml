@@ -11,6 +11,8 @@ container:
   readOnlyRootFilesystem: false
   allowPrivilegeEscalation: false
   comPlusEnableDiagnostics: 0
+  command: ["dotnet"]
+  args: ["PowerLinesDataService.dll", "--fixtures"]
 
 message:
   host: host.docker.internal
@@ -23,10 +25,14 @@ message:
   resultPassword: rabbitmq
 
 deployment:
-  restartPolicy: Always
+  restartPolicy: Never
   replicas: 1
   minReadySeconds: 5
   redeployOnChange: update this field to force a change
   imagePullSecret:
   runAsNonRoot: true
   runAsUser: 1000
+
+cronJob:
+  schedule: "* * * * *"
+  concurrencyPolicy: Forbid

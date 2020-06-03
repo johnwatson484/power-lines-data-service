@@ -1,0 +1,11 @@
+{{- include "helm-library.cron-job" (list . "power-lines-data-service.cron-job") -}}
+{{- define "power-lines-data-service.cron-job" -}}
+spec:
+  jobTemplate: 
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - {{ include "helm-library.container" (list . "power-lines-data-service.container") | nindent 12 }}
+{{- end -}}

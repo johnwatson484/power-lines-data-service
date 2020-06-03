@@ -1,5 +1,5 @@
-{{- include "helm-library.configmap" (list . "sugar-free-healthy-diet.configmap") -}}
-{{- define "sugar-free-healthy-diet.configmap" -}}
+{{- include "helm-library.configmap" (list . "power-lines-data-service.configmap") -}}
+{{- define "power-lines-data-service.configmap" -}}
 data:
   Message__Host: {{ quote .Values.message.host }}
   Message__Port: {{ quote .Values.message.port }}

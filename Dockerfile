@@ -17,6 +17,7 @@ RUN dotnet restore ./PowerLinesDataService.Tests/PowerLinesDataService.Tests.csp
 COPY --chown=dotnet:dotnet ./PowerLinesDataService/*.csproj ./PowerLinesDataService/
 RUN dotnet restore ./PowerLinesDataService/PowerLinesDataService.csproj
 COPY --chown=dotnet:dotnet ./PowerLinesDataService.Tests/ ./PowerLinesDataService.Tests/
+RUN true
 COPY --chown=dotnet:dotnet ./PowerLinesDataService/ ./PowerLinesDataService/
 RUN dotnet publish ./PowerLinesDataService/ -c Release -o /home/dotnet/out
 

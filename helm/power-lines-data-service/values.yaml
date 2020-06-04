@@ -28,6 +28,6 @@ message:
 
 cronJob:
   schedule: "0 12,13,14,15,16,17 * * *"
-  resultsAllSchedule: "0 12,13,14,15,16,17 * * *"
+  resultsAllSchedule: "0 0 1 * *"
   concurrencyPolicy: Forbid
   restartPolicy: Never

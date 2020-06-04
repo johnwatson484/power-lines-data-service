@@ -42,7 +42,7 @@ steps:
       tags: |
         $(version)
         latest
-      arguments: '--target production'
+      arguments: '--target production --no-cache'
       addPipelineData: false
 
   - task: Docker@2

@@ -10,9 +10,11 @@ container:
   limitCpu: 250m
   readOnlyRootFilesystem: false
   allowPrivilegeEscalation: false
-  comPlusEnableDiagnostics: 0
+  comPlusEnableDiagnostics: 0  
   command: ["dotnet"]
   args: ["PowerLinesDataService.dll", "--fixtures"]
+  resultsArgs: ["PowerLinesDataService.dll", "--results"]
+  resultsAllArgs: ["PowerLinesDataService.dll", "--results", "--all"]
 
 message:
   host: host.docker.internal
@@ -24,15 +26,8 @@ message:
   resultUsername: rabbitmq
   resultPassword: rabbitmq
 
-deployment:
-  restartPolicy: Never
-  replicas: 1
-  minReadySeconds: 5
-  redeployOnChange: update this field to force a change
-  imagePullSecret:
-  runAsNonRoot: true
-  runAsUser: 1000
-
 cronJob:
-  schedule: "* * * * *"
+  schedule: "0 12,13,14,15,16,17 * * *"
+  resultsAllSchedule: "0 12,13,14,15,16,17 * * *"
   concurrencyPolicy: Forbid
+  restartPolicy: Never

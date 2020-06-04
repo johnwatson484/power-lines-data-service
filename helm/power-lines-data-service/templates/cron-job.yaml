@@ -4,8 +4,8 @@ spec:
   jobTemplate: 
     spec:
       template:
-        spec:
-          restartPolicy: OnFailure
+        spec:          
           containers:
-          - {{ include "helm-library.container" (list . "power-lines-data-service.container") | nindent 12 }}
+          - {{ include "helm-library.container" (list . "power-lines-data-service.container-fixtures") | nindent 12 }}
+          - {{ include "helm-library.container" (list . "power-lines-data-service.container-results") | nindent 12 }}
 {{- end -}}

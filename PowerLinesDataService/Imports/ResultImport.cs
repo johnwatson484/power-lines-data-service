@@ -50,6 +50,7 @@ namespace PowerLinesDataService.Imports
                 firstSeason++;
             }
 
+            sender.CloseConnection();
             Console.WriteLine("Import complete");
         }
 

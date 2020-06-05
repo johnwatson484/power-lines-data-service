@@ -32,6 +32,8 @@ namespace PowerLinesDataService.Imports
             {
                 using (var client = new WebClient())
                 {
+                    Console.WriteLine("Downloading: {0}", string.Format(source));
+                    Console.WriteLine("Saving to: {0}", file.Filepath);
                     client.DownloadFile(string.Format(source), file.Filepath);
                 }
                 SendToQueue(file.ReadFileToList());

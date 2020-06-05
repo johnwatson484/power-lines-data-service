@@ -30,7 +30,6 @@ namespace PowerLinesDataService.Messaging
         {
             var message = JsonConvert.SerializeObject(obj);            
             var body = Encoding.UTF8.GetBytes(message);
-            Console.WriteLine("Sending: {0}", message);
 
             channel.BasicPublish(exchange: "",
                                  routingKey: queue,

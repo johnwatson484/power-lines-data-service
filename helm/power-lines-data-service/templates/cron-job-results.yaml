@@ -1,0 +1,10 @@
+{{- include "helm-library.cron-job" (list . "power-lines-data-service.cron-job-results") -}}
+{{- define "power-lines-data-service.cron-job-results" -}}
+spec:
+  jobTemplate: 
+    spec:
+      template:
+        spec:          
+          containers:
+          - {{ include "helm-library.container" (list . "power-lines-data-service.container-results") | nindent 12 }}
+{{- end -}}

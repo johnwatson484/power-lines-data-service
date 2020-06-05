@@ -25,8 +25,7 @@ namespace PowerLinesDataService.Common
 
         public IList<object> ReadFileToList()
         {
-            Console.WriteLine("Reading: {0}", Filepath);
-            return System.IO.File.Exists(Filepath) ? reader.ReadToList(Filepath) : new List<object>();
+            return reader.ReadToList(Filepath);
         }
     }
 }

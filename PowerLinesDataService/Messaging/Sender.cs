@@ -23,14 +23,12 @@ namespace PowerLinesDataService.Messaging
 
         public void CloseConnection()
         {
-            Console.WriteLine("CLOSE CONNECTION");
             connection.Close();
         }
 
         public void SendMessage(object obj)
         {
             var message = JsonConvert.SerializeObject(obj);
-            Console.WriteLine("SEND MESSAGE");         
             var body = Encoding.UTF8.GetBytes(message);
 
             channel.BasicPublish(exchange: "",
@@ -48,7 +46,6 @@ namespace PowerLinesDataService.Messaging
 
         private void CreateConnection()
         {
-            Console.WriteLine("CREATE CONNECTION");
             connection = connectionFactory.CreateConnection();
         }
 
@@ -59,7 +56,6 @@ namespace PowerLinesDataService.Messaging
 
         private void CreateQueue()
         {
-            Console.WriteLine("CREATE QUEUE");
             channel.QueueDeclare(queue: queue,
                                  durable: true,
                                  exclusive: false,

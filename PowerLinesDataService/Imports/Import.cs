@@ -55,6 +55,7 @@ namespace PowerLinesDataService.Imports
         {
             foreach (var item in items)
             {
+                Console.WriteLine("Sending: {0}", item);
                 sender.SendMessage(item);
             }
         }

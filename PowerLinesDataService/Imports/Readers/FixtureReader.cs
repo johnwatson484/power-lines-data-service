@@ -19,7 +19,6 @@ namespace PowerLinesDataService.Imports.Readers
             using (var reader = new StreamReader(filepath))
             {
                 var header = reader.ReadLine();
-                Console.WriteLine(header);
                 var headers = header.Split(',');
 
                 int homeAverage = Array.IndexOf(headers, "AvgH");
@@ -29,7 +28,6 @@ namespace PowerLinesDataService.Imports.Readers
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
-                    Console.WriteLine(line);
                     var values = line.Split(',');
 
                     fixtures.Add(new Fixture

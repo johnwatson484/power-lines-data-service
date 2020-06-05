@@ -45,6 +45,7 @@ namespace PowerLinesDataService.Imports
                 file.DeleteFileIfExists();
             }
 
+            sender.CloseConnection();
             Console.WriteLine("Import complete");
         }
 

@@ -1,5 +1,7 @@
 {{- include "helm-library.cron-job" (list . "power-lines-data-service.cron-job-results") -}}
 {{- define "power-lines-data-service.cron-job-results" -}}
+metadata:
+  name: {{.Values.name }}-results
 spec:
   jobTemplate: 
     spec:

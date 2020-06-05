@@ -5,6 +5,13 @@ services:
       target: development
     environment: 
       Message__Host: power-lines-message
+      Message__Port: 5672
+      Message__FixtureQueue: fixtures
+      Message__FixtureUsername: rabbitmq
+      Message__FixturePassword: rabbitmq
+      Message__ResultQueue: results
+      Message__ResultUsername: rabbitmq
+      Message__ResultPassword: rabbitmq
     depends_on: 
       - power-lines-message
     volumes:

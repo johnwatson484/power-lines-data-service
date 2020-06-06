@@ -12,8 +12,6 @@ namespace PowerLinesDataService.Imports.Readers
     {
         public IList<object> ReadToList(string filepath)
         {
-            CultureInfo culture = new CultureInfo("en-GB");
-
             List<Result> results = new List<Result>();
 
             using (var reader = new StreamReader(filepath))
@@ -41,7 +39,7 @@ namespace PowerLinesDataService.Imports.Readers
                         results.Add(new Result
                         {
                             Division = values[0].Trim(),
-                            Date = DateTime.Parse(values[1].Trim(), culture.DateTimeFormat),
+                            Date = DateTime.Parse(values[1].Trim(), CultureInfo.CreateSpecificCulture("en-GB")),
                             HomeTeam = values[3].Trim(),
                             AwayTeam = values[4].Trim(),
                             FullTimeHomeGoals = int.Parse(values[5].Trim()),

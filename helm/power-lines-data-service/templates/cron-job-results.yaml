@@ -3,6 +3,7 @@
 metadata:
   name: {{.Values.name }}-results
 spec:
+  successfulJobsHistoryLimit: 1
   jobTemplate: 
     spec:
       template:

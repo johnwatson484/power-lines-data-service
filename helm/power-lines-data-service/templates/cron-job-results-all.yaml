@@ -3,6 +3,7 @@
 metadata:
   name: {{.Values.name }}-results-all
 spec:
+  successfulJobsHistoryLimit: 1
   schedule: {{.Values.cronJob.resultsAllSchedule }}
   jobTemplate: 
     spec:

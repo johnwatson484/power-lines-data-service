@@ -39,7 +39,7 @@ namespace PowerLinesDataService.Imports.Readers
                         results.Add(new Result
                         {
                             Division = values[0].Trim(),
-                            Date = DateTime.Parse(values[1].Trim(), CultureInfo.CreateSpecificCulture("en-GB")),
+                            Date = DateTime.Parse(values[1].Trim()),
                             HomeTeam = values[3].Trim(),
                             AwayTeam = values[4].Trim(),
                             FullTimeHomeGoals = int.Parse(values[5].Trim()),

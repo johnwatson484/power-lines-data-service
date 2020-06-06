@@ -31,7 +31,7 @@ namespace PowerLinesDataService.Imports.Readers
                     fixtures.Add(new Fixture
                     {
                         Division = values[0].Trim(),
-                        Date = DateTime.Parse(values[1].Trim(), CultureInfo.CreateSpecificCulture("en-GB")).Add(TimeSpan.Parse(values[2])),
+                        Date = DateTime.Parse(values[1].Trim()).Add(TimeSpan.Parse(values[2])),
                         HomeTeam = values[3].Trim(),
                         AwayTeam = values[4].Trim(),
                         HomeOddsAverage = homeAverage == -1 ? 0 : !string.IsNullOrEmpty(values[homeAverage].Trim()) ? decimal.Parse(values[homeAverage].Trim()) : 0,

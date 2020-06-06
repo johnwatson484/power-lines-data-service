@@ -8,6 +8,7 @@ using PowerLinesDataService.Services;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Imports.Factory;
 using PowerLinesDataService.Messaging;
+using System.Globalization;
 
 namespace PowerLinesDataService
 {
@@ -19,6 +20,7 @@ namespace PowerLinesDataService
         public static void Main(string[] args)
         {   
             Console.WriteLine("Starting service");
+            SetCulture();
             RegisterServices();            
 
             var importService = new ImportService(
@@ -59,6 +61,12 @@ namespace PowerLinesDataService
             {
                 ((IDisposable)serviceProvider).Dispose();
             }
+        }
+
+        private static void SetCulture()
+        {
+            CultureInfo culture = new CultureInfo("en-GB");
+            CultureInfo.DefaultThreadCurrentCulture = culture;
         }
     }
 }

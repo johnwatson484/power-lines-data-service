@@ -66,7 +66,8 @@ namespace PowerLinesDataService.Imports
                 return 1993;
             }
 
-            if (currentDate.Month <= 5)
+            // handle covid 19 season changes
+            if (currentDate.Month <= 5 || (currentDate.Year == 2020 && currentDate.Month <= 8))
             {
                 return currentDate.Year - 1;
             }

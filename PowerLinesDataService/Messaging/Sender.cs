@@ -10,10 +10,12 @@ namespace PowerLinesDataService.Messaging
         protected ConnectionFactory connectionFactory;
         protected RabbitMQ.Client.IConnection connection;
         protected IModel channel;
+        protected QueueType queueType;
         protected string queue;
 
-        public void CreateConnectionToQueue(string brokerUrl, string queue)
+        public void CreateConnectionToQueue(QueueType queueType, string brokerUrl, string queue)
         {
+            this.queueType = queueType;
             this.queue = queue;
             CreateConnectionFactory(brokerUrl);
             CreateConnection();
@@ -31,15 +33,16 @@ namespace PowerLinesDataService.Messaging
             var message = JsonConvert.SerializeObject(obj);
             var body = Encoding.UTF8.GetBytes(message);
 
-            channel.BasicPublish(exchange: "",
-                                 routingKey: queue,
+            channel.BasicPublish(exchange: GetExchangeName(),
+                                 routingKey: GetQueueName(),
                                  basicProperties: null,
                                  body: body);
         }
 
         private void CreateConnectionFactory(string brokerUrl)
         {
-            connectionFactory = new ConnectionFactory() {
+            connectionFactory = new ConnectionFactory()
+            {
                 Uri = new Uri(brokerUrl)
             };
         }
@@ -56,11 +59,41 @@ namespace PowerLinesDataService.Messaging
 
         private void CreateQueue()
         {
+            switch (queueType)
+            {
+                case QueueType.Worker:
+                    CreateWorkerQueue();
+                    break;
+                case QueueType.Exchange:
+                    CreateExchange();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void CreateWorkerQueue()
+        {
             channel.QueueDeclare(queue: queue,
                                  durable: true,
                                  exclusive: false,
                                  autoDelete: false,
                                  arguments: null);
+        }
+
+        private void CreateExchange()
+        {
+            channel.ExchangeDeclare(queue, ExchangeType.Fanout, true, false);
+        }
+
+        private string GetExchangeName()
+        {
+            return queueType == QueueType.Exchange ? queue : "";
+        }
+
+        private string GetQueueName()
+        {
+            return queueType == QueueType.Worker ? queue : "";
         }
     }
 }

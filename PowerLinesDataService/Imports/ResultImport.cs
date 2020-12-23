@@ -5,6 +5,7 @@ using PowerLinesDataService.Common;
 using System.Linq;
 using PowerLinesDataService.Messaging;
 using System.Threading.Tasks;
+using PowerLinesMessaging;
 
 namespace PowerLinesDataService.Imports
 {

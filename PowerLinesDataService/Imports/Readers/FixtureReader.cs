@@ -26,9 +26,10 @@ namespace PowerLinesDataService.Imports.Readers
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
-                    if (string.IsNullOrEmpty(line))
+                    var values = line.Split(',');
+
+                    if (!string.IsNullOrEmpty(values[0].Trim()))
                     {
-                        var values = line.Split(',');
                         fixtures.Add(new Fixture
                         {
                             Division = values[0].Trim(),

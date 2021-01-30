@@ -19,10 +19,19 @@ namespace PowerLinesDataService.Imports
         }
 
         public override void CreateConnectionToQueue()
-        {            
+        {
+            var options = new SenderOptions
+            {
+                Host = messageConfig.Host,
+                Port = messageConfig.Port,
+                Username = messageConfig.FixtureUsername,
+                Password = messageConfig.FixturePassword,
+                QueueName = messageConfig.FixtureQueue,
+                QueueType = QueueType.ExchangeFanout
+            };
+
             Task.Run(() =>
-                sender.CreateConnectionToQueue(QueueType.Worker, new BrokerUrl(messageConfig.Host, messageConfig.Port, messageConfig.FixtureUsername, messageConfig.FixturePassword).ToString(),
-                    messageConfig.FixtureQueue))
+                sender.CreateConnectionToQueue(options))
             .Wait();
         }
     }

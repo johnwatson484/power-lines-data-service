@@ -19,12 +19,10 @@ container:
 message:
   host: host.docker.internal
   port: 5672
+  username: rabbitmq
+  password: rabbitmq
   fixtureQueue: power-lines-fixtures
-  fixtureUsername: rabbitmq
-  fixturePassword: rabbitmq
   resultQueue: power-lines-results
-  resultUsername: rabbitmq
-  resultPassword: rabbitmq
 
 cronJob:
   schedule: "0 12,13,14,15,16,17 * * *"

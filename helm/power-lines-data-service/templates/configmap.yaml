@@ -3,12 +3,10 @@
 data:
   Message__Host: {{ quote .Values.message.host }}
   Message__Port: {{ quote .Values.message.port }}
+  Message__Username: {{ quote .Values.message.username }}
+  Message__Password: {{ quote .Values.message.password }}
   Message__FixtureQueue: {{ quote .Values.message.fixtureQueue }}
-  Message__FixtureUsername: {{ quote .Values.message.fixtureUsername }}
-  Message__FixturePassword: {{ quote .Values.message.fixturePassword }}
   Message__ResultQueue: {{ quote .Values.message.resultQueue }}
-  Message__ResultUsername: {{ quote .Values.message.resultUsername }}
-  Message__ResultPassword: {{ quote .Values.message.resultPassword }}
   COMPlus_EnableDiagnostics: {{ quote .Values.container.comPlusEnableDiagnostics }}
   ASPNETCORE_ENVIRONMENT: {{ quote .Values.environment }}
 {{- end -}}

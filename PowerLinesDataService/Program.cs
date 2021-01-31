@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration.Binder;
 using PowerLinesDataService.Services;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Imports.Factory;
@@ -25,7 +23,8 @@ namespace PowerLinesDataService
 
             var importService = new ImportService(
                 new Folder("./ImportedFiles"), 
-                serviceProvider.GetService<IImportFactory>());
+                serviceProvider.GetService<IImportFactory>(),
+                serviceProvider.GetService<MessageConfig>());
 
             importService.RunImports(args);
             

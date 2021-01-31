@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using PowerLinesDataService.Common;
-using PowerLinesDataService.Messaging;
 using PowerLinesMessaging;
 
 namespace PowerLinesDataService.Imports
@@ -10,25 +9,34 @@ namespace PowerLinesDataService.Imports
     public abstract class Import
     {
         protected string source;
-
         protected IFile file;
-
+        protected IConnection connection;
         protected ISender sender;
+        protected string queueName;
 
-        protected MessageConfig messageConfig;
-
-        public Import(string source, IFile file, ISender sender, MessageConfig messageConfig)
+        public Import(string source, IFile file, IConnection connection, string queueName)
         {
             this.source = source;
             this.file = file;
-            this.sender = sender;
-            this.messageConfig = messageConfig;
+            this.connection = connection;
+            this.queueName = queueName;
+            CreateSender();
+        }
+
+        protected void CreateSender()
+        {
+            var options =  new SenderOptions
+            {
+                Name = queueName,
+                QueueType = QueueType.ExchangeFanout,
+                QueueName = queueName
+            };
+
+            sender = connection.CreateSenderChannel(options);
         }
 
         public virtual void Load(string[] args)
-        {            
-            CreateConnectionToQueue();
-
+        {
             try
             {
                 using (var client = new WebClient())
@@ -46,11 +54,8 @@ namespace PowerLinesDataService.Imports
                 file.DeleteFileIfExists();
             }
 
-            sender.CloseConnection();
             Console.WriteLine("Import complete");
         }
-
-        public abstract void CreateConnectionToQueue();
 
         public virtual void SendToQueue(IList<object> items)
         {

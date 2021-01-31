@@ -3,15 +3,13 @@ using System.Net;
 using System.Collections.Generic;
 using PowerLinesDataService.Common;
 using System.Linq;
-using PowerLinesDataService.Messaging;
-using System.Threading.Tasks;
 using PowerLinesMessaging;
 
 namespace PowerLinesDataService.Imports
 {
     public class ResultImport : Import
     {
-        public ResultImport(string source, IFile file, ISender sender, MessageConfig messageConfig) : base(source, file, sender, messageConfig)
+        public ResultImport(string source, IFile file, IConnection connection, string queueName) : base(source, file, connection, queueName)
         {
         }
 
@@ -23,8 +21,6 @@ namespace PowerLinesDataService.Imports
 
             int firstSeason = GetFirstSeasonYear(DateTime.Now, currentSeasonOnly);
             int lastSeason = GetLastSeasonYear(DateTime.Now);
-
-            CreateConnectionToQueue();
 
             while (firstSeason < lastSeason)
             {
@@ -50,8 +46,6 @@ namespace PowerLinesDataService.Imports
 
                 firstSeason++;
             }
-
-            sender.CloseConnection();
             Console.WriteLine("Import complete");
         }
 
@@ -109,22 +103,5 @@ namespace PowerLinesDataService.Imports
             "T1",
             "G1"
         };
-
-        public override void CreateConnectionToQueue()
-        {
-            var options = new SenderOptions
-            {
-                Host = messageConfig.Host,
-                Port = messageConfig.Port,
-                Username = messageConfig.ResultUsername,
-                Password = messageConfig.ResultPassword,
-                QueueName = messageConfig.ResultQueue,
-                QueueType = QueueType.ExchangeFanout
-            };
-
-            Task.Run(() =>
-                sender.CreateConnectionToQueue(options))
-            .Wait();
-        }
     }
 }

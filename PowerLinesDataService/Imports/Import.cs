@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 using PowerLinesDataService.Common;
 using PowerLinesMessaging;
 
@@ -25,7 +28,7 @@ namespace PowerLinesDataService.Imports
 
         protected void CreateSender()
         {
-            var options =  new SenderOptions
+            var options = new SenderOptions
             {
                 Name = queueName,
                 QueueType = QueueType.ExchangeFanout,
@@ -35,13 +38,16 @@ namespace PowerLinesDataService.Imports
             sender = connection.CreateSenderChannel(options);
         }
 
-        public virtual void Load(string[] args)
+        public virtual async Task Load(string[] args)
         {
             try
             {
-                using (var client = new WebClient())
+                using (var httpClient = new HttpClient())
                 {
-                    client.DownloadFile(string.Format(source), file.Filepath);
+                    using var request = new HttpRequestMessage(HttpMethod.Get, source);
+                    using Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
+                    stream = new FileStream(file.Filepath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
+                    await contentStream.CopyToAsync(stream);
                 }
                 SendToQueue(file.ReadFileToList());
             }

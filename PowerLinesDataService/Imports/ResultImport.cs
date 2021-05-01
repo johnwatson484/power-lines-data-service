@@ -1,9 +1,11 @@
 using System;
-using System.Net;
 using System.Collections.Generic;
 using PowerLinesDataService.Common;
 using System.Linq;
 using PowerLinesMessaging;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.IO;
 
 namespace PowerLinesDataService.Imports
 {
@@ -13,7 +15,7 @@ namespace PowerLinesDataService.Imports
         {
         }
 
-        public override void Load(string[] args)
+        public override async Task Load(string[] args)
         {
             Console.WriteLine("Importing results");
 
@@ -28,9 +30,12 @@ namespace PowerLinesDataService.Imports
                 {
                     try
                     {
-                        using (var client = new WebClient())
+                        using (var httpClient = new HttpClient())
                         {
-                            client.DownloadFile(string.Format(source, GetSeasonYears(firstSeason % 100), league), file.Filepath);
+                            using var request = new HttpRequestMessage(HttpMethod.Get, string.Format(source, GetSeasonYears(firstSeason % 100), league));
+                            using Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
+                            stream = new FileStream(file.Filepath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
+                            await contentStream.CopyToAsync(stream);
                         }
                         SendToQueue(file.ReadFileToList());
                     }
@@ -78,7 +83,7 @@ namespace PowerLinesDataService.Imports
             return currentDate.Year + 1;
         }
 
-        private List<string> leagues = new List<string>
+        private readonly List<string> leagues = new List<string>
         {
             "E0",
             "E1",

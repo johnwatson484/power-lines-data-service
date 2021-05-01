@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Imports;
 using PowerLinesDataService.Imports.Factory;
@@ -23,10 +24,10 @@ namespace PowerLinesDataService.Services
             CreateConnection();
         }
 
-        public void RunImports(string[] args)
+        public async Task RunImports(string[] args)
         {
             folder.CreateFolderIfNotExists();
-            List<Import> imports = new List<Import>();            
+            List<Import> imports = new List<Import>();
 
             if (args.Contains("--results"))
             {
@@ -40,7 +41,7 @@ namespace PowerLinesDataService.Services
 
             foreach (var import in imports)
             {
-                import.Load(args);
+                await import.Load(args);
             }
 
             CloseConnection();

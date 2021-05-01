@@ -8,8 +8,7 @@ namespace PowerLinesDataService.Imports.Factory
 {
     public class ImportFactory : IImportFactory
     {
-
-        MessageConfig messageConfig;
+        readonly MessageConfig messageConfig;
 
         public ImportFactory(MessageConfig messageConfig)
         {

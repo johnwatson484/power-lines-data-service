@@ -5,6 +5,7 @@ using System.IO;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Models;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace PowerLinesDataService.Imports.Readers
 {
@@ -26,6 +27,8 @@ namespace PowerLinesDataService.Imports.Readers
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
+                    // Source file often contains unicode characters
+                    line = Regex.Replace(line, @"[^\u0000-\u007F]", string.Empty);
                     var values = line.Split(',');
 
                     if (!string.IsNullOrEmpty(values[0].Trim()))

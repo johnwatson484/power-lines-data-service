@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Models;
 
@@ -27,6 +28,8 @@ namespace PowerLinesDataService.Imports.Readers
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
+                    // Source file often contains unicode characters
+                    line = Regex.Replace(line, @"[^\u0000-\u007F]", string.Empty);
                     var values = line.Split(',');
 
                     if (time == -1)

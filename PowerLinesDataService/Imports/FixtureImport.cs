@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using PowerLinesDataService.Common;
-using PowerLinesDataService.Messaging;
 using PowerLinesMessaging;
 
 namespace PowerLinesDataService.Imports
@@ -12,10 +11,10 @@ namespace PowerLinesDataService.Imports
         {
         }
 
-        public override void Load(string[] args)
+        public override async Task Load(string[] args)
         {
             Console.WriteLine("Importing fixtures");
-            base.Load(args);
+            await base.Load(args);
         }
     }
 }

@@ -7,6 +7,7 @@ using PowerLinesDataService.Common;
 using PowerLinesDataService.Imports.Factory;
 using PowerLinesDataService.Messaging;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace PowerLinesDataService
 {
@@ -15,18 +16,18 @@ namespace PowerLinesDataService
         private static IServiceProvider serviceProvider;   
         private static IConfigurationRoot configuration;    
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {   
             Console.WriteLine("Starting service");
             SetCulture();
-            RegisterServices();            
+            RegisterServices();
 
             var importService = new ImportService(
                 new Folder("./ImportedFiles"), 
                 serviceProvider.GetService<IImportFactory>(),
                 serviceProvider.GetService<MessageConfig>());
 
-            importService.RunImports(args);
+            await importService.RunImports(args);
             
             DisposeServices();
             Console.WriteLine("Stopping service");
@@ -37,7 +38,7 @@ namespace PowerLinesDataService
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();        
+                .AddEnvironmentVariables();
 
             configuration = builder.Build();
 

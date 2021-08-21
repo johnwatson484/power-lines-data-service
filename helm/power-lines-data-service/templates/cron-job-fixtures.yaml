@@ -7,7 +7,7 @@ spec:
   jobTemplate: 
     spec:
       template:
-        spec:          
+        spec:
           containers:
           - {{ include "helm-library.container" (list . "power-lines-data-service.container-fixtures") | nindent 12 }}
 {{- end -}}

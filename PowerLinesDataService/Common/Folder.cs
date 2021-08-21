@@ -5,7 +5,7 @@ namespace PowerLinesDataService.Common
 {
     public class Folder : IFolder
     {
-        private string folderPath;
+        private readonly string folderPath;
 
         public Folder(string folderPath)
         {
@@ -20,7 +20,7 @@ namespace PowerLinesDataService.Common
                 {
                     return;
                 }
-                DirectoryInfo di = Directory.CreateDirectory(folderPath);
+                Directory.CreateDirectory(folderPath);
             }
             catch (Exception e)
             {

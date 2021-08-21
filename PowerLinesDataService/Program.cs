@@ -13,8 +13,7 @@ namespace PowerLinesDataService
 {
     public static class Program
     {
-        private static IServiceProvider serviceProvider;   
-        private static IConfigurationRoot configuration;    
+        private static IServiceProvider serviceProvider;
 
         public static async Task Main(string[] args)
         {   
@@ -40,7 +39,7 @@ namespace PowerLinesDataService
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
-            configuration = builder.Build();
+            IConfigurationRoot configuration = builder.Build();
 
             var messageConfig = configuration.GetSection("Message").Get<MessageConfig>();
 

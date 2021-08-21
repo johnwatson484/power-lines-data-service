@@ -17,7 +17,7 @@ namespace PowerLinesDataService.Imports
         protected ISender sender;
         protected string queueName;
 
-        public Import(string source, IFile file, IConnection connection, string queueName)
+        protected Import(string source, IFile file, IConnection connection, string queueName)
         {
             this.source = source;
             this.file = file;

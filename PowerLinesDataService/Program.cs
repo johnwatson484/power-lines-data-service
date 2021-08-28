@@ -22,7 +22,7 @@ namespace PowerLinesDataService
             RegisterServices();
 
             var importService = new ImportService(
-                new Folder("./ImportedFiles"), 
+                new Folder(Path.GetTempPath()), 
                 serviceProvider.GetService<IImportFactory>(),
                 serviceProvider.GetService<MessageConfig>());
 

@@ -20,13 +20,13 @@ namespace PowerLinesDataService.Imports.Factory
             switch(importType)
             {
                 case ImportType.Fixture:
-                    return new FixtureImport("http://www.football-data.co.uk/fixtures.csv",
+                    return new FixtureImport("https://www.football-data.co.uk/fixtures.csv",
                         new File(string.Format("{0}Fixtures_{1}.csv", System.IO.Path.GetTempPath(), DateTime.Now.ToString("yyyyMMddHHmmss")), new FixtureReader()),
                         connection,
                         messageConfig.FixtureQueue
                         );
                 case ImportType.Result:
-                    return new ResultImport("http://www.football-data.co.uk/mmz4281/{0}/{1}.csv",
+                    return new ResultImport("https://www.football-data.co.uk/mmz4281/{0}/{1}.csv",
                         new File(string.Format("{0}Results_{1}.csv", System.IO.Path.GetTempPath(), DateTime.Now.ToString("yyyyMMddHHmmss")), new ResultReader()),
                         connection,
                         messageConfig.ResultQueue);

@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 
-namespace PowerLinesDataService.Common
+namespace PowerLinesDataService.Common;
+
+public interface IFile
 {
-    public interface IFile
-    {
-        string Filepath { get; }
+    string Filepath { get; }
 
-        void DeleteFileIfExists();
+    void DeleteFileIfExists();
 
-        IList<object> ReadFileToList();
+    IList<object> ReadFileToList();
 
-    }
 }

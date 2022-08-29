@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 
-namespace PowerLinesDataService.Services
+namespace PowerLinesDataService.Services;
+
+public interface IImportService
 {
-    public interface IImportService
-    {
-        Task RunImports(string[] args);
-    }
+    Task RunImports(string[] args);
 }

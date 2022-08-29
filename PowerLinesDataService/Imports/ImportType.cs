@@ -1,10 +1,7 @@
-using System;
+namespace PowerLinesDataService.Imports;
 
-namespace PowerLinesDataService.Imports
+public enum ImportType
 {
-    public enum ImportType
-    {
-        Fixture,
-        Result
-    }
+    Fixture,
+    Result
 }

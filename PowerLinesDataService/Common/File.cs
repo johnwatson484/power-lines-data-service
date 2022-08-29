@@ -1,31 +1,29 @@
-using System;
 using System.Collections.Generic;
 
-namespace PowerLinesDataService.Common
+namespace PowerLinesDataService.Common;
+
+public class File : IFile
 {
-    public class File : IFile
+    public string Filepath { get; }
+
+    protected IReader reader;
+
+    public File(string filepath, IReader reader)
     {
-        public string Filepath { get; }
+        Filepath = filepath;
+        this.reader = reader;
+    }
 
-        protected IReader reader;
-
-        public File(string filepath, IReader reader)
+    public void DeleteFileIfExists()
+    {
+        if (System.IO.File.Exists(Filepath))
         {
-            Filepath = filepath;
-            this.reader = reader;
+            System.IO.File.Delete(Filepath);
         }
+    }
 
-        public void DeleteFileIfExists()
-        {
-            if (System.IO.File.Exists(Filepath))
-            {
-                System.IO.File.Delete(Filepath);
-            }
-        }        
-
-        public IList<object> ReadFileToList()
-        {
-            return reader.ReadToList(Filepath);
-        }
+    public IList<object> ReadFileToList()
+    {
+        return reader.ReadToList(Filepath);
     }
 }

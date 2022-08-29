@@ -1,31 +1,30 @@
 using System;
 using System.IO;
 
-namespace PowerLinesDataService.Common
+namespace PowerLinesDataService.Common;
+
+public class Folder : IFolder
 {
-    public class Folder : IFolder
+    private readonly string folderPath;
+
+    public Folder(string folderPath)
     {
-        private readonly string folderPath;
+        this.folderPath = folderPath;
+    }
 
-        public Folder(string folderPath)
+    public void CreateFolderIfNotExists()
+    {
+        try
         {
-            this.folderPath = folderPath;
+            if (Directory.Exists(folderPath))
+            {
+                return;
+            }
+            Directory.CreateDirectory(folderPath);
         }
-
-        public void CreateFolderIfNotExists()
+        catch (Exception e)
         {
-            try
-            {
-                if (Directory.Exists(folderPath))
-                {
-                    return;
-                }
-                Directory.CreateDirectory(folderPath);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Unable to create directory: {0}", e.ToString());
-            }
+            Console.WriteLine("Unable to create directory: {0}", e.ToString());
         }
     }
 }

@@ -1,9 +1,8 @@
 using PowerLinesMessaging;
 
-namespace PowerLinesDataService.Imports.Factory
+namespace PowerLinesDataService.Imports.Factory;
+
+public interface IImportFactory
 {
-    public interface IImportFactory
-    {
-        Import GetImport(ImportType importType, IConnection connection);
-    }
+    Import GetImport(ImportType importType, IConnection connection);
 }

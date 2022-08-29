@@ -1,7 +1,6 @@
-namespace PowerLinesDataService.Common
+namespace PowerLinesDataService.Common;
+
+public interface IFolder
 {
-    public interface IFolder
-    {
-        void CreateFolderIfNotExists();
-    }
+    void CreateFolderIfNotExists();
 }

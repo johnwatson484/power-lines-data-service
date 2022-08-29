@@ -7,61 +7,60 @@ using PowerLinesDataService.Imports.Factory;
 using PowerLinesDataService.Messaging;
 using PowerLinesMessaging;
 
-namespace PowerLinesDataService.Services
+namespace PowerLinesDataService.Services;
+
+public class ImportService : IImportService
 {
-    public class ImportService : IImportService
+    protected IFolder folder;
+    protected IImportFactory factory;
+    protected MessageConfig messageConfig;
+    protected IConnection connection;
+
+    public ImportService(IFolder folder, IImportFactory factory, MessageConfig messageConfig)
     {
-        protected IFolder folder;
-        protected IImportFactory factory;
-        protected MessageConfig messageConfig;
-        protected IConnection connection;
+        this.folder = folder;
+        this.factory = factory;
+        this.messageConfig = messageConfig;
+        CreateConnection();
+    }
 
-        public ImportService(IFolder folder, IImportFactory factory, MessageConfig messageConfig)
+    public async Task RunImports(string[] args)
+    {
+        folder.CreateFolderIfNotExists();
+        List<Import> imports = new List<Import>();
+
+        if (args.Contains("--results"))
         {
-            this.folder = folder;
-            this.factory = factory;
-            this.messageConfig = messageConfig;
-            CreateConnection();
+            imports.Add(factory.GetImport(ImportType.Result, connection));
         }
 
-        public async Task RunImports(string[] args)
+        if (args.Contains("--fixtures"))
         {
-            folder.CreateFolderIfNotExists();
-            List<Import> imports = new List<Import>();
-
-            if (args.Contains("--results"))
-            {
-                imports.Add(factory.GetImport(ImportType.Result, connection));
-            }
-
-            if (args.Contains("--fixtures"))
-            {
-                imports.Add(factory.GetImport(ImportType.Fixture, connection));
-            }
-
-            foreach (var import in imports)
-            {
-                await import.Load(args);
-            }
-
-            CloseConnection();
+            imports.Add(factory.GetImport(ImportType.Fixture, connection));
         }
 
-        protected void CreateConnection()
+        foreach (var import in imports)
         {
-            var options = new ConnectionOptions
-            {
-                Host = messageConfig.Host,
-                Port = messageConfig.Port,
-                Username = messageConfig.Username,
-                Password = messageConfig.Password
-            };
-            connection = new Connection(options);
+            await import.Load(args);
         }
 
-        protected void CloseConnection()
+        CloseConnection();
+    }
+
+    protected void CreateConnection()
+    {
+        var options = new ConnectionOptions
         {
-            connection.CloseConnection();
-        }
+            Host = messageConfig.Host,
+            Port = messageConfig.Port,
+            Username = messageConfig.Username,
+            Password = messageConfig.Password
+        };
+        connection = new Connection(options);
+    }
+
+    protected void CloseConnection()
+    {
+        connection.CloseConnection();
     }
 }

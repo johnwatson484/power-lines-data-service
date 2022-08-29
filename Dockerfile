@@ -1,5 +1,5 @@
 # Development
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-alpine AS development
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS development
 
 RUN apk update \
   && apk --no-cache add curl procps unzip \
@@ -12,13 +12,8 @@ USER dotnet
 WORKDIR /home/dotnet
 
 COPY --chown=dotnet:dotnet ./Directory.Build.props ./Directory.Build.props
-RUN mkdir -p /home/dotnet/PowerLinesDataService/ /home/dotnet/PowerLinesDataService.Tests/
-COPY --chown=dotnet:dotnet ./PowerLinesDataService.Tests/*.csproj ./PowerLinesDataService.Tests/
-RUN dotnet restore ./PowerLinesDataService.Tests/PowerLinesDataService.Tests.csproj
 COPY --chown=dotnet:dotnet ./PowerLinesDataService/*.csproj ./PowerLinesDataService/
 RUN dotnet restore ./PowerLinesDataService/PowerLinesDataService.csproj
-COPY --chown=dotnet:dotnet ./PowerLinesDataService.Tests/ ./PowerLinesDataService.Tests/
-RUN true
 COPY --chown=dotnet:dotnet ./PowerLinesDataService/ ./PowerLinesDataService/
 RUN dotnet publish ./PowerLinesDataService/ -c Release -o /home/dotnet/out
 
@@ -27,7 +22,7 @@ ENV ASPNETCORE_ENVIRONMENT=development
 ENTRYPOINT dotnet watch --project ./PowerLinesDataService run
 
 # Production
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-alpine AS production
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine AS production
 
 RUN apk add --no-cache icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false

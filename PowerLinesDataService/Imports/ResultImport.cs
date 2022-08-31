@@ -54,12 +54,12 @@ public class ResultImport : Import
         Console.WriteLine("Import complete");
     }
 
-    private string GetSeasonYears(int firstYear)
+    private static string GetSeasonYears(int firstYear)
     {
         return string.Format("{0}{1}", firstYear.ToString("D2"), (++firstYear).ToString("D2"));
     }
 
-    private int GetFirstSeasonYear(DateTime currentDate, bool currentSeasonOnly = false)
+    private static int GetFirstSeasonYear(DateTime currentDate, bool currentSeasonOnly = false)
     {
         if (!currentSeasonOnly)
         {
@@ -74,7 +74,7 @@ public class ResultImport : Import
         return currentDate.Year;
     }
 
-    private int GetLastSeasonYear(DateTime currentDate)
+    private static int GetLastSeasonYear(DateTime currentDate)
     {
         if (currentDate.Month <= 5)
         {
@@ -83,7 +83,7 @@ public class ResultImport : Import
         return currentDate.Year + 1;
     }
 
-    private readonly List<string> leagues = new List<string>
+    private readonly List<string> leagues = new()
     {
         "E0",
         "E1",

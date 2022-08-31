@@ -14,7 +14,6 @@ services:
       - power-lines-message
     volumes:
       - ./PowerLinesDataService:/home/dotnet/PowerLinesDataService
-      - ./PowerLinesDataService.Tests:/home/dotnet/PowerLinesDataService.Tests
 
   power-lines-message:
     image: rabbitmq:3-management-alpine

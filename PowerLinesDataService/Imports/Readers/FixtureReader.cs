@@ -13,7 +13,7 @@ public class FixtureReader : IReader
 {
     public IList<object> ReadToList(string filepath)
     {
-        List<Fixture> fixtures = new List<Fixture>();
+        List<Fixture> fixtures = new();
 
         using (var reader = new StreamReader(filepath))
         {

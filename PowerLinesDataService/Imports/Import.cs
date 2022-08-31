@@ -41,7 +41,7 @@ public abstract class Import
     {
         try
         {
-            using (var httpClient = new HttpClient())
+            using (HttpClient httpClient = new())
             {
                 using var request = new HttpRequestMessage(HttpMethod.Get, source);
                 using Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),

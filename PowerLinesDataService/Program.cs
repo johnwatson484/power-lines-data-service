@@ -21,7 +21,7 @@ public static class Program
         SetCulture();
         RegisterServices();
 
-        var importService = new ImportService(
+        ImportService importService = new(
             new Folder(Path.GetTempPath()),
             serviceProvider.GetService<IImportFactory>(),
             serviceProvider.GetService<MessageConfig>());
@@ -36,7 +36,6 @@ public static class Program
     {
         var builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables();
 
         IConfigurationRoot configuration = builder.Build();
@@ -56,15 +55,15 @@ public static class Program
         {
             return;
         }
-        if (serviceProvider is IDisposable)
+        if (serviceProvider is IDisposable disposable)
         {
-            ((IDisposable)serviceProvider).Dispose();
+            disposable.Dispose();
         }
     }
 
     private static void SetCulture()
     {
-        CultureInfo culture = new CultureInfo("en-GB");
+        CultureInfo culture = new("en-GB");
         CultureInfo.DefaultThreadCurrentCulture = culture;
     }
 }

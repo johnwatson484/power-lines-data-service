@@ -27,7 +27,7 @@ public class ImportService : IImportService
     public async Task RunImports(string[] args)
     {
         folder.CreateFolderIfNotExists();
-        List<Import> imports = new List<Import>();
+        List<Import> imports = new();
 
         if (args.Contains("--results"))
         {
@@ -49,7 +49,7 @@ public class ImportService : IImportService
 
     protected void CreateConnection()
     {
-        var options = new ConnectionOptions
+        ConnectionOptions options = new()
         {
             Host = messageConfig.Host,
             Port = messageConfig.Port,

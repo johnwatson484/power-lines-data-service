@@ -12,7 +12,7 @@ public class ResultReader : IReader
 {
     public IList<object> ReadToList(string filepath)
     {
-        List<Result> results = new List<Result>();
+        List<Result> results = new();
 
         using (var reader = new StreamReader(filepath))
         {
@@ -61,7 +61,7 @@ public class ResultReader : IReader
         return results.ToList<object>();
     }
 
-    private string[] InsertIntoArray(string[] array, int position, string value)
+    private static string[] InsertIntoArray(string[] array, int position, string value)
     {
         var values = array.ToList();
         values.Insert(position, value);

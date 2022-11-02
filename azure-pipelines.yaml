@@ -9,6 +9,7 @@ resources:
     type: github
     endpoint: John D Watson
     name: johnwatson484/azure-devops-templates
+    ref: refs/tags/1
 
 extends:
   template: build.yaml@templates
@@ -16,3 +17,6 @@ extends:
     repo: power-lines-data-service
     project: PowerLinesDataService
     framework: net
+    deploy: true
+    namespace: power-lines
+    hasSecureHelmValuesFile: true

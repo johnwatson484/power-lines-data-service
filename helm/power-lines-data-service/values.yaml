@@ -1,15 +1,12 @@
-environment: development
+environment: production
 name: power-lines-data-service
 image: power-lines-data-service
 
 container:
-  imagePullPolicy: IfNotPresent
   requestMemory: 60Mi
   requestCpu: 60m
   limitMemory: 250Mi
   limitCpu: 250m
-  readOnlyRootFilesystem: false
-  allowPrivilegeEscalation: false
   comPlusEnableDiagnostics: 0  
   command: ["dotnet"]
   args: ["PowerLinesDataService.dll", "--fixtures"]

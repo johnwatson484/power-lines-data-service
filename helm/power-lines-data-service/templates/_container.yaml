@@ -3,6 +3,8 @@ name: {{ .Values.name }}-fixtures
 envFrom:
 - configMapRef:
     name: {{ .Values.name }}
+- secretRef:
+    name: {{ .Values.name }}
 {{- end -}}
 
 {{- define "power-lines-data-service.container-results" -}}
@@ -12,6 +14,8 @@ args:
 envFrom:
 - configMapRef:
     name: {{ .Values.name }}
+- secretRef:
+    name: {{ .Values.name }}
 {{- end -}}
 
 {{- define "power-lines-data-service.container-results-all" -}}
@@ -20,5 +24,7 @@ args:
   {{- toYaml .Values.container.resultsAllArgs | nindent 12 }}
 envFrom:
 - configMapRef:
+    name: {{ .Values.name }}
+- secretRef:
     name: {{ .Values.name }}
 {{- end -}}

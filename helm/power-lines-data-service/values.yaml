@@ -14,10 +14,8 @@ container:
   resultsAllArgs: ["PowerLinesDataService.dll", "--results", "--all"]
 
 message:
-  host: host.docker.internal
+  host: services.lynxmagnus.com
   port: 5672
-  username: rabbitmq
-  password: rabbitmq
   fixtureQueue: power-lines-fixtures
   resultQueue: power-lines-results
 

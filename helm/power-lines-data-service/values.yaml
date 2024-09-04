@@ -24,3 +24,6 @@ cronJob:
   resultsAllSchedule: "0 0 1 * *"
   concurrencyPolicy: Forbid
   restartPolicy: Never
+
+secret:
+  secretsPath: /power-lines-data-service

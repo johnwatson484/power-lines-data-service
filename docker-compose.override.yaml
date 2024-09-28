@@ -13,6 +13,8 @@ services:
       - power-lines-message
     volumes:
       - ./PowerLinesDataService:/home/dotnet/PowerLinesDataService
+    networks:
+      - power-lines
 
   power-lines-message:
     image: rabbitmq:3-management-alpine
@@ -26,6 +28,8 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+    networks:
+      - power-lines
 
 networks:
   power-lines:

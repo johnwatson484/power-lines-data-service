@@ -1,5 +1,5 @@
 # Development
-FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine AS development
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS development
 
 RUN apk update \
   && apk --no-cache add curl procps unzip \
@@ -22,7 +22,7 @@ ENV ASPNETCORE_ENVIRONMENT=development
 ENTRYPOINT dotnet watch --project ./PowerLinesDataService run
 
 # Production
-FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine AS production
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS production
 
 RUN apk add --no-cache icu-libs
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false

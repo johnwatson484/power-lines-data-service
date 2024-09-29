@@ -1,33 +1,28 @@
-using System;
 using PowerLinesDataService.Imports.Readers;
-using PowerLinesDataService.Common;
-using PowerLinesDataService.Messaging;
 using PowerLinesMessaging;
+using PowerLinesDataService.Options;
+using Microsoft.Extensions.Options;
+using File = PowerLinesDataService.Common.File;
 
 namespace PowerLinesDataService.Imports.Factory;
 
-public class ImportFactory : IImportFactory
+public class ImportFactory(IOptions<MessageOptions> messageOptions) : IImportFactory
 {
-    readonly MessageConfig messageConfig;
-
-    public ImportFactory(MessageConfig messageConfig)
-    {
-        this.messageConfig = messageConfig;
-    }
+    private readonly MessageOptions messageOptions = messageOptions.Value;
 
     public Import GetImport(ImportType importType, IConnection connection)
     {
         return importType switch
         {
             ImportType.Fixture => new FixtureImport("https://www.football-data.co.uk/fixtures.csv",
-                                new File(string.Format("{0}Fixtures_{1}.csv", System.IO.Path.GetTempPath(), DateTime.Now.ToString("yyyyMMddHHmmss")), new FixtureReader()),
+                                new File(string.Format("{0}Fixtures_{1}.csv", Path.GetTempPath(), DateTime.Now.ToString("yyyyMMddHHmmss")), new FixtureReader()),
                                 connection,
-                                messageConfig.FixtureQueue
+                                messageOptions.FixtureQueue
                                 ),
             ImportType.Result => new ResultImport("https://www.football-data.co.uk/mmz4281/{0}/{1}.csv",
-                                new File(string.Format("{0}Results_{1}.csv", System.IO.Path.GetTempPath(), DateTime.Now.ToString("yyyyMMddHHmmss")), new ResultReader()),
+                                new File(string.Format("{0}Results_{1}.csv", Path.GetTempPath(), DateTime.Now.ToString("yyyyMMddHHmmss")), new ResultReader()),
                                 connection,
-                                messageConfig.ResultQueue),
+                                messageOptions.ResultQueue),
             _ => throw new ArgumentException("Import type not found"),
         };
     }

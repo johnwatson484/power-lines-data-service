@@ -1,20 +1,10 @@
-using System;
-using System.Collections.Generic;
 using PowerLinesDataService.Common;
-using System.Linq;
 using PowerLinesMessaging;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.IO;
 
 namespace PowerLinesDataService.Imports;
 
-public class ResultImport : Import
+public class ResultImport(string source, IFile file, IConnection connection, string queueName) : Import(source, file, connection, queueName)
 {
-    public ResultImport(string source, IFile file, IConnection connection, string queueName) : base(source, file, connection, queueName)
-    {
-    }
-
     public override async Task Load(string[] args)
     {
         Console.WriteLine("Importing results");
@@ -56,7 +46,7 @@ public class ResultImport : Import
 
     private static string GetSeasonYears(int firstYear)
     {
-        return string.Format("{0}{1}", firstYear.ToString("D2"), (++firstYear).ToString("D2"));
+        return string.Format("{0}{1}", firstYear.ToString("D2"), (firstYear + 1).ToString("D2"));
     }
 
     private static int GetFirstSeasonYear(DateTime currentDate, bool currentSeasonOnly = false)

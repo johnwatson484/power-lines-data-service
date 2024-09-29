@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace PowerLinesDataService.Services;
 
 public interface IImportService

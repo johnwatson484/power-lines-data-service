@@ -3,14 +3,15 @@ services:
     build:
       target: development
     environment: 
-      Message__Host: power-lines-message
-      Message__Port: 5672
-      Message__Username: rabbitmq
-      Message__Password: rabbitmq
-      Message__FixtureQueue: fixtures
-      Message__ResultQueue: results
+      MESSAGE__HOST: power-lines-message
+      MESSAGE__PORT: 5672
+      MESSAGE__USERNAME: rabbitmq
+      MESSAGE__PASSWORD: rabbitmq
+      MESSAGE__FIXTUREQUEUE: fixtures
+      MESSAGE__RESULTQUEUE: results
     depends_on: 
-      - power-lines-message
+      power-lines-message:
+        condition: service_healthy
     volumes:
       - ./PowerLinesDataService:/home/dotnet/PowerLinesDataService
     networks:
@@ -30,6 +31,12 @@ services:
       - "5672:5672"
     networks:
       - power-lines
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping --erlang-cookie rabbitmq
+      interval: 10s
+      retries: 5
+      start_period: 1s
+      timeout: 10s
 
 networks:
   power-lines:

@@ -1,6 +1,6 @@
-namespace PowerLinesDataService.Messaging;
+namespace PowerLinesDataService.Options;
 
-public class MessageConfig
+public class MessageOptions
 {
     public string Host { get; set; }
     public int Port { get; set; }

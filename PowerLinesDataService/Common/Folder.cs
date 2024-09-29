@@ -1,16 +1,8 @@
-using System;
-using System.IO;
-
 namespace PowerLinesDataService.Common;
 
-public class Folder : IFolder
+public class Folder(string folderPath) : IFolder
 {
-    private readonly string folderPath;
-
-    public Folder(string folderPath)
-    {
-        this.folderPath = folderPath;
-    }
+    private readonly string folderPath = folderPath;
 
     public void CreateFolderIfNotExists()
     {

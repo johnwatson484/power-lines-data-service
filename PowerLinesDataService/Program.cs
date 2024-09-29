@@ -1,69 +1,38 @@
-﻿using System;
-using System.IO;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PowerLinesDataService.Services;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Imports.Factory;
-using PowerLinesDataService.Messaging;
 using System.Globalization;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using PowerLinesDataService.Options;
+using Microsoft.Extensions.Options;
 
-namespace PowerLinesDataService;
+SetCulture();
 
-public static class Program
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+
+builder.Services.Configure<MessageOptions>(builder.Configuration.GetSection(key: "Message"));
+
+builder.Services.AddScoped<IImportFactory, ImportFactory>();
+builder.Services.AddScoped<IImportService, ImportService>();
+
+IHost host = builder.Build();
+
+await RunImports(host.Services, args);
+
+static async Task RunImports(IServiceProvider serviceProvider, string[] args)
 {
-    private static IServiceProvider serviceProvider;
+    ImportService importService = new(
+    new Folder(Path.GetTempPath()),
+    serviceProvider.GetService<IImportFactory>(),
+    serviceProvider.GetService<IOptions<MessageOptions>>());
 
-    public static async Task Main(string[] args)
-    {
-        Console.WriteLine("Starting service");
-        SetCulture();
-        RegisterServices();
+    await importService.RunImports(args);
+}
 
-        ImportService importService = new(
-            new Folder(Path.GetTempPath()),
-            serviceProvider.GetService<IImportFactory>(),
-            serviceProvider.GetService<MessageConfig>());
-
-        await importService.RunImports(args);
-
-        DisposeServices();
-        Console.WriteLine("Stopping service");
-    }
-
-    private static void RegisterServices()
-    {
-        var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddEnvironmentVariables();
-
-        IConfigurationRoot configuration = builder.Build();
-
-        var messageConfig = configuration.GetSection("Message").Get<MessageConfig>();
-
-        var services = new ServiceCollection();
-        services.AddSingleton(messageConfig);
-        services.AddScoped<IImportFactory, ImportFactory>();
-        services.AddScoped<IImportService, ImportService>();
-        serviceProvider = services.BuildServiceProvider();
-    }
-
-    private static void DisposeServices()
-    {
-        if (serviceProvider == null)
-        {
-            return;
-        }
-        if (serviceProvider is IDisposable disposable)
-        {
-            disposable.Dispose();
-        }
-    }
-
-    private static void SetCulture()
-    {
-        CultureInfo culture = new("en-GB");
-        CultureInfo.DefaultThreadCurrentCulture = culture;
-    }
+static void SetCulture()
+{
+    CultureInfo culture = new("en-GB");
+    CultureInfo.DefaultThreadCurrentCulture = culture;
 }

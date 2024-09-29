@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Imports;
 using PowerLinesDataService.Imports.Factory;
-using PowerLinesDataService.Messaging;
+using PowerLinesDataService.Options;
 using PowerLinesMessaging;
 
 namespace PowerLinesDataService.Services;
@@ -13,14 +11,14 @@ public class ImportService : IImportService
 {
     protected IFolder folder;
     protected IImportFactory factory;
-    protected MessageConfig messageConfig;
+    protected MessageOptions messageOptions;
     protected IConnection connection;
 
-    public ImportService(IFolder folder, IImportFactory factory, MessageConfig messageConfig)
+    public ImportService(IFolder folder, IImportFactory factory, IOptions<MessageOptions> messageOptions)
     {
         this.folder = folder;
         this.factory = factory;
-        this.messageConfig = messageConfig;
+        this.messageOptions = messageOptions.Value;
         CreateConnection();
     }
 
@@ -51,10 +49,10 @@ public class ImportService : IImportService
     {
         ConnectionOptions options = new()
         {
-            Host = messageConfig.Host,
-            Port = messageConfig.Port,
-            Username = messageConfig.Username,
-            Password = messageConfig.Password
+            Host = messageOptions.Host,
+            Port = messageOptions.Port,
+            Username = messageOptions.Username,
+            Password = messageOptions.Password
         };
         connection = new Connection(options);
     }

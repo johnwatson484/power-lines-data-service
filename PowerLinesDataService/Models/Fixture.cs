@@ -1,5 +1,3 @@
-using System;
-
 namespace PowerLinesDataService.Models;
 
 public class Fixture

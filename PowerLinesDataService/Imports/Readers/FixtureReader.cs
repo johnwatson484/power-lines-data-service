@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Models;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace PowerLinesDataService.Imports.Readers;

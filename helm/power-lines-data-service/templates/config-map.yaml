@@ -1,0 +1,10 @@
+{{- include "helm-library.configmap" (list . "power-lines-data-service.configmap") -}}
+{{- define "power-lines-data-service.configmap" -}}
+data:
+  MESSAGE__HOST: {{ quote .Values.message.host }}
+  MESSAGE__PORT: {{ quote .Values.message.port }}
+  MESSAGE__FIXTUREQUEUE: {{ quote .Values.message.fixtureQueue }}
+  MESSAGE__RESULTQUEUE: {{ quote .Values.message.resultQueue }}
+  COMPLUS_ENABLEDIAGNOSTICS: {{ quote .Values.container.comPlusEnableDiagnostics }}
+  ASPNETCORE_ENVIRONMENT: {{ quote .Values.environment }}
+{{- end -}}

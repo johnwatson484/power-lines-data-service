@@ -14,12 +14,13 @@ WORKDIR /home/dotnet
 COPY --chown=dotnet:dotnet ./Directory.Build.props ./Directory.Build.props
 COPY --chown=dotnet:dotnet ./PowerLinesDataService/*.csproj ./PowerLinesDataService/
 RUN dotnet restore ./PowerLinesDataService/PowerLinesDataService.csproj
-COPY --chown=dotnet:dotnet ./PowerLinesDataService/ ./PowerLinesDataService/
+COPY --chown=dotnet:dotnet . .
+
 RUN dotnet publish ./PowerLinesDataService/ -c Release -o /home/dotnet/out
 
 ENV ASPNETCORE_ENVIRONMENT=development
-# Override entrypoint using shell form so that environment variables are picked up
-ENTRYPOINT dotnet watch --project ./PowerLinesDataService run
+
+ENTRYPOINT ["dotnet", "watch", "--project", "./PowerLinesDataService", "run"]
 
 # Production
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS production
@@ -35,5 +36,5 @@ WORKDIR /home/dotnet
 
 COPY --from=development /home/dotnet/out/ ./
 ENV ASPNETCORE_ENVIRONMENT=production
-# Override entrypoint using shell form so that environment variables are picked up
-ENTRYPOINT dotnet PowerLinesDataService.dll
+
+ENTRYPOINT ["dotnet", "PowerLinesDataService.dll"]

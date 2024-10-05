@@ -1,17 +1,14 @@
-environment: production
-name: power-lines-data-service
-image: power-lines-data-service
-
 container:
-  requestMemory: 60Mi
-  requestCpu: 60m
-  limitMemory: 250Mi
-  limitCpu: 250m
+  image: power-lines-data-service
+  resourceTier: M
   comPlusEnableDiagnostics: 0  
   command: ["dotnet"]
   args: ["PowerLinesDataService.dll", "--fixtures"]
   resultsArgs: ["PowerLinesDataService.dll", "--results"]
   resultsAllArgs: ["PowerLinesDataService.dll", "--results", "--all"]
+
+config:
+  environment: production
 
 message:
   host: services.lynxmagnus.com
@@ -20,7 +17,7 @@ message:
   resultQueue: power-lines-results
 
 cronJob:
-  schedule: "0 12,13,14,15,16,17 * * *"
+  schedule: "0 9,10,11,12,13,14,15,16,17 * * *"
   resultsAllSchedule: "0 0 1 * *"
   concurrencyPolicy: Forbid
   restartPolicy: Never

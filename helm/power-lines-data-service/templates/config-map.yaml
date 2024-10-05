@@ -6,5 +6,5 @@ data:
   MESSAGE__FIXTUREQUEUE: {{ quote .Values.message.fixtureQueue }}
   MESSAGE__RESULTQUEUE: {{ quote .Values.message.resultQueue }}
   COMPLUS_ENABLEDIAGNOSTICS: {{ quote .Values.container.comPlusEnableDiagnostics }}
-  ASPNETCORE_ENVIRONMENT: {{ quote .Values.config.environment }}
+  ASPNETCORE_ENVIRONMENT: {{ quote .Values.configMap.environment }}
 {{- end -}}

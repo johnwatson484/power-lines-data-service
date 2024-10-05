@@ -6,8 +6,9 @@ container:
   args: ["PowerLinesDataService.dll", "--fixtures"]
   resultsArgs: ["PowerLinesDataService.dll", "--results"]
   resultsAllArgs: ["PowerLinesDataService.dll", "--results", "--all"]
+  skipDefault: true
 
-config:
+configMap:
   environment: production
 
 message:

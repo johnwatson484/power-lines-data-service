@@ -1,30 +1,15 @@
 {{- define "power-lines-data-service.container-fixtures" -}}
-name: {{ .Values.name }}-fixtures
-envFrom:
-- configMapRef:
-    name: {{ .Values.name }}
-- secretRef:
-    name: {{ .Values.name }}
+name: {{ .Chart.Name }}-fixtures
 {{- end -}}
 
 {{- define "power-lines-data-service.container-results" -}}
-name: {{ .Values.name }}-results
+name: {{ .Chart.Name }}-results
 args: 
   {{- toYaml .Values.container.resultsArgs | nindent 12 }}
-envFrom:
-- configMapRef:
-    name: {{ .Values.name }}
-- secretRef:
-    name: {{ .Values.name }}
 {{- end -}}
 
 {{- define "power-lines-data-service.container-results-all" -}}
-name: {{ .Values.name }}-results-all
+name: {{ .Chart.Name }}-results-all
 args: 
   {{- toYaml .Values.container.resultsAllArgs | nindent 12 }}
-envFrom:
-- configMapRef:
-    name: {{ .Values.name }}
-- secretRef:
-    name: {{ .Values.name }}
 {{- end -}}

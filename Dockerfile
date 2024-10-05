@@ -11,9 +11,6 @@ RUN addgroup -g 1000 dotnet \
 USER dotnet
 WORKDIR /home/dotnet
 
-COPY --chown=dotnet:dotnet ./Directory.Build.props ./Directory.Build.props
-COPY --chown=dotnet:dotnet ./PowerLinesDataService/*.csproj ./PowerLinesDataService/
-RUN dotnet restore ./PowerLinesDataService/PowerLinesDataService.csproj
 COPY --chown=dotnet:dotnet . .
 
 RUN dotnet publish ./PowerLinesDataService/ -c Release -o /home/dotnet/out

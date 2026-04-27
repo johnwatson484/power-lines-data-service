@@ -1,5 +1,4 @@
-[![Build Status](https://johnwatson484.visualstudio.com/John%20D%20Watson/_apis/build/status/Power%20Lines%20Data%20Service?branchName=master)](https://johnwatson484.visualstudio.com/John%20D%20Watson/_build/latest?definitionId=32&branchName=master)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=johnwatson484_power-lines-data-service&metric=alert_status)](https://sonarcloud.io/dashboard?id=johnwatson484_power-lines-data-service)
+[![Build Status](https://github.com/johnwatson484/power-lines-data-service/actions/workflows/build.yaml/badge.svg)](https://github.com/johnwatson484/power-lines-data-service/actions/workflows/build.yaml)
 
 # Power Lines Data Service
 Import base data for analysis

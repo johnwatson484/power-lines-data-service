@@ -16,13 +16,22 @@ public class ResultReader : IReader
             var headers = header.Split(',');
 
             int time = Array.IndexOf(headers, "Time");
-            int homeAverage = Array.IndexOf(headers, "BbAvH");
-            int drawAverage = Array.IndexOf(headers, "BbAvD");
-            int awayAverage = Array.IndexOf(headers, "BbAvA");
+
+            // The source dropped the Betbrain columns for AvgH/AvgD/AvgA part way through the 2018/19 season.
+            int homeAverage = FindColumn(headers, "AvgH", "BbAvH");
+            int drawAverage = FindColumn(headers, "AvgD", "BbAvD");
+            int awayAverage = FindColumn(headers, "AvgA", "BbAvA");
 
             while (!reader.EndOfStream)
             {
                 var line = reader.ReadLine();
+
+                // Older seasons pad the file with trailing blank rows, which have no columns to insert into.
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
+
                 // Source file often contains unicode characters
                 line = Regex.Replace(line, @"[^\u0000-\u007F]", string.Empty);
                 var values = line.Split(',');
@@ -57,10 +66,27 @@ public class ResultReader : IReader
         return results.ToList<object>();
     }
 
+    private static int FindColumn(string[] headers, params string[] names)
+    {
+        foreach (var name in names)
+        {
+            int index = Array.IndexOf(headers, name);
+
+            if (index != -1)
+            {
+                return index;
+            }
+        }
+
+        return -1;
+    }
+
     private static string[] InsertIntoArray(string[] array, int position, string value)
     {
         var values = array.ToList();
-        values.Insert(position, value);
+
+        // A malformed row can have fewer columns than the insert position, e.g. a stray short line in the source file.
+        values.Insert(Math.Min(position, values.Count), value);
         return values.ToArray();
     }
 }

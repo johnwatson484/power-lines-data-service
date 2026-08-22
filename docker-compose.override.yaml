@@ -9,7 +9,7 @@ services:
       MESSAGE__PASSWORD: rabbitmq
       MESSAGE__FIXTUREQUEUE: fixtures
       MESSAGE__RESULTQUEUE: results
-    depends_on: 
+    depends_on:
       power-lines-message:
         condition: service_healthy
     volumes:

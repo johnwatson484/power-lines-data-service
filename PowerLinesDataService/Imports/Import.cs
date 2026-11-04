@@ -1,4 +1,5 @@
 using PowerLinesDataService.Common;
+using PowerLinesDataService.Models;
 using PowerLinesMessaging;
 
 namespace PowerLinesDataService.Imports;
@@ -39,15 +40,16 @@ public abstract class Import
             using (HttpClient httpClient = new())
             {
                 using var request = new HttpRequestMessage(HttpMethod.Get, source);
-                using Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
+                using Stream contentStream = await (await GetResponse(httpClient, request)).Content.ReadAsStreamAsync(),
                 stream = new FileStream(file.Filepath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
                 await contentStream.CopyToAsync(stream);
             }
-            SendToQueue(file.ReadFileToList());
+            SendSource(file.ReadFileToList(), source);
         }
         catch (Exception ex)
         {
             Console.WriteLine("Error importing: {0}", ex);
+            throw;
         }
         finally
         {
@@ -55,6 +57,28 @@ public abstract class Import
         }
 
         Console.WriteLine("Import complete");
+    }
+
+    protected static async Task<HttpResponseMessage> GetResponse(HttpClient client, HttpRequestMessage request)
+    {
+        var response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        return response;
+    }
+
+    protected void SendSource(IList<object> items, string url)
+    {
+        foreach (var item in items.OfType<SourceRecord>()) SourceIdentity.Attach(item, url);
+        var ambiguous = items.OfType<SourceRecord>().GroupBy(x => x.SourceMatchId).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+        if (ambiguous.Count > 0) throw new InvalidOperationException("Ambiguous repeated seasonal pairings; stage and resolve source identity before import: " + string.Join(",", ambiguous));
+        SendToQueue(items);
+        var statusSender = connection.CreateSenderChannel(new SenderOptions { Name = "imports", QueueType = QueueType.ExchangeFanout, QueueName = "imports" });
+        foreach (var group in items.OfType<SourceRecord>().GroupBy(x => new { x.SourceSeason, x.SourceFileHash, Division = x is Result result ? result.Division : ((Fixture)x).Division }))
+        {
+            var division = group.Key.Division;
+            statusSender.SendMessage(new ImportStatus { SourceUrl = url, Division = division, SourceSeason = group.Key.SourceSeason, SourceFileHash = group.Key.SourceFileHash, RowCount = group.Count(), CompletedAt = DateTime.UtcNow });
+        }
+        Console.WriteLine($"Successful import {DateTime.UtcNow:O}: {url}, rows={items.Count}");
     }
 
     public virtual void SendToQueue(IList<object> items)

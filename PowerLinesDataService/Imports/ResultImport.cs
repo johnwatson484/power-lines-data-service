@@ -1,4 +1,5 @@
 using PowerLinesDataService.Common;
+using PowerLinesDataService.Models;
 using PowerLinesMessaging;
 
 namespace PowerLinesDataService.Imports;
@@ -14,6 +15,7 @@ public class ResultImport(string source, IFile file, IConnection connection, str
         int firstSeason = GetFirstSeasonYear(DateTime.Now, currentSeasonOnly);
         int lastSeason = GetLastSeasonYear(DateTime.Now);
 
+        var failedSources = new List<string>();
         while (firstSeason < lastSeason)
         {
             foreach (var league in leagues)
@@ -23,15 +25,16 @@ public class ResultImport(string source, IFile file, IConnection connection, str
                     using (var httpClient = new HttpClient())
                     {
                         using var request = new HttpRequestMessage(HttpMethod.Get, string.Format(source, GetSeasonYears(firstSeason % 100), league));
-                        using Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
+                        using Stream contentStream = await (await GetResponse(httpClient, request)).Content.ReadAsStreamAsync(),
                         stream = new FileStream(file.Filepath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
                         await contentStream.CopyToAsync(stream);
                     }
-                    SendToQueue(file.ReadFileToList());
+                    SendSource(file.ReadFileToList(), string.Format(source, GetSeasonYears(firstSeason % 100), league));
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error importing: {0}", ex);
+                    failedSources.Add($"{GetSeasonYears(firstSeason % 100)}/{league}");
                 }
                 finally
                 {
@@ -41,6 +44,7 @@ public class ResultImport(string source, IFile file, IConnection connection, str
 
             firstSeason++;
         }
+        if (failedSources.Count > 0) throw new InvalidOperationException("Failed source imports: " + string.Join(", ", failedSources));
         Console.WriteLine("Import complete");
     }
 

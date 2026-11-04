@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using PowerLinesDataService.Imports.Readers;
+using PowerLinesDataService.Imports;
 using PowerLinesDataService.Models;
 
 namespace PowerLinesDataService.Tests;
@@ -56,5 +57,17 @@ public class ReaderTests
             Assert.That(rows.Count(x => { var max=x.SourcePrices.Single(p=>p.Columns=="BbMx"); return x.HomeOddsAverage==max.Home && x.DrawOddsAverage==max.Draw && x.AwayOddsAverage==max.Away; }), Is.Zero);
         }
         finally { System.IO.File.Delete(file); }
+    }
+    [Test]
+    public void Postponed_season_identity_uses_the_source_url_instead_of_calendar_year()
+    {
+        var (_, rows) = Parse("Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,FTR\nE0,01/08/2020,A,B,1,0,H\nE0,01/11/2020,A,B,1,0,H\n");
+        var hash = rows[0].SourceFileHash;
+        SourceIdentity.Attach(rows[0], "https://www.football-data.co.uk/mmz4281/1920/E0.csv");
+        SourceIdentity.Attach(rows[1], "https://www.football-data.co.uk/mmz4281/2021/E0.csv");
+        Assert.That(rows[0].SourceSeason, Is.EqualTo("1920"));
+        Assert.That(rows[1].SourceSeason, Is.EqualTo("2021"));
+        Assert.That(rows[0].SourceMatchId, Is.Not.EqualTo(rows[1].SourceMatchId));
+        Assert.That(rows[0].SourceFileHash, Is.EqualTo(hash));
     }
 }

@@ -4,6 +4,8 @@ This companion change repairs the one-shot importer used by Power Lines Web. It 
 
 `ResultReader` and `FixtureReader` now use .NET's quoted-field CSV parser and named headers; a missing `Time` never changes row indexes. UTF-8 names remain intact. Dates use explicit day/month/year formats and numbers use invariant parsing. Missing half-time observations remain nullable; missing/invalid price triplets remain missing. Diagnostics identify rejected rows. Average, maximum, closing and sampled individual bookmaker families travel separately, with file SHA-256, source season, row identity and source URL. Individual quote observation timestamps remain unknown. Source column and collection definitions: [Football-Data notes](https://football-data.co.uk/notes.txt), [collection conventions](https://football-data.co.uk/downloadm.php).
 
+Result seasons come from the source URL rather than calendar dates, so delayed 2019/20 matches cannot collide with 2020/21 pairings. Fixture identities remain calendar-partitioned where the global fixture feed supplies no season.
+
 The source does not provide stable match/team IDs. The derived seasonal ordered-team pairing supports ordinary fixture rescheduling, but repeated seasonal pairings are quarantined before sending. Renames and ambiguous pairings require explicit identity/alias reconciliation; Unicode removal and fuzzy automatic merging are prohibited. Stable authoritative IDs and cross-division transfer remain dependencies, not completed coverage improvements.
 
 ## Reproduce and stage without RabbitMQ

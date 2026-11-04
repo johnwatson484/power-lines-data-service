@@ -68,9 +68,9 @@ public abstract class Import
 
     protected void SendSource(IList<object> items, string url)
     {
+        foreach (var item in items.OfType<SourceRecord>()) SourceIdentity.Attach(item, url);
         var ambiguous = items.OfType<SourceRecord>().GroupBy(x => x.SourceMatchId).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
         if (ambiguous.Count > 0) throw new InvalidOperationException("Ambiguous repeated seasonal pairings; stage and resolve source identity before import: " + string.Join(",", ambiguous));
-        foreach (var item in items.OfType<SourceRecord>()) item.SourceUrl = url;
         SendToQueue(items);
         var statusSender = connection.CreateSenderChannel(new SenderOptions { Name = "imports", QueueType = QueueType.ExchangeFanout, QueueName = "imports" });
         foreach (var group in items.OfType<SourceRecord>().GroupBy(x => new { x.SourceSeason, x.SourceFileHash, Division = x is Result result ? result.Division : ((Fixture)x).Division }))

@@ -34,7 +34,17 @@ The `${command:pickRemoteProcess}` will prompt for which process to connect to w
 Local changes to code files will automatically trigger a rebuild and restart of the application within the container.
 
 ### Running service with arguments
-A script, `./scripts/run-service.sh`, is provided to run the containerised service with arguments.
+A script, `./scripts/run-service`, is provided to run the containerised service with arguments.
+
+To import every available results season into the running local app:
+
+```sh
+./scripts/run-service --results --all
+```
+
+Unavailable source files are logged and skipped. Parsing and publishing failures are reported with their source URL and fail the job after the remaining files have been attempted. The final summary counts imported, unavailable, and failed sources. Row diagnostics identify incomplete or invalid source records that were skipped.
+
+See [the full import investigation](docs/FULL_IMPORT_DIAGNOSIS.md) for the historical compatibility fixes and local validation results.
 
 Accepted arguements:  
 `--fixtures` import all available fixtures.  
@@ -44,7 +54,6 @@ Accepted arguements:
 ## Run tests
 Unit tests are written in NUnit.
 
-```
-docker-compose -f docker-compose.test.yaml build
-docker-compose -f docker-compose.test.yaml up
+```sh
+dotnet test PowerLinesDataService.Tests --configuration Release
 ```

@@ -19,5 +19,9 @@ public static class SourceIdentity
             _ => throw new ArgumentException("Unsupported source record")
         };
         item.SourceMatchId = SourceCsv.Hash($"{item.SourceSeason}|{identity.Division}|{identity.HomeTeam}|{identity.AwayTeam}");
+        // Completed results can repeat the same home/away pairing within a season.
+        // Their played date distinguishes those matches; fixtures retain rescheduling identity.
+        if (item is Result result)
+            item.SourceMatchId = SourceCsv.Hash($"{item.SourceSeason}|{identity.Division}|{identity.HomeTeam}|{identity.AwayTeam}|{result.Date:yyyy-MM-dd}");
     }
 }

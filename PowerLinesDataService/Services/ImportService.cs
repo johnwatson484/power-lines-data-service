@@ -37,12 +37,17 @@ public class ImportService : IImportService
             imports.Add(factory.GetImport(ImportType.Fixture, connection));
         }
 
-        foreach (var import in imports)
+        try
         {
-            await import.Load(args);
+            foreach (var import in imports)
+            {
+                await import.Load(args);
+            }
         }
-
-        CloseConnection();
+        finally
+        {
+            CloseConnection();
+        }
     }
 
     protected void CreateConnection()

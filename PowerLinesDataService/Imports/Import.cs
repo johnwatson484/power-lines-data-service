@@ -10,6 +10,7 @@ public abstract class Import
     protected IFile file;
     protected IConnection connection;
     protected ISender sender;
+    private ISender statusSender;
     protected string queueName;
 
     protected Import(string source, IFile file, IConnection connection, string queueName)
@@ -21,7 +22,7 @@ public abstract class Import
         CreateSender();
     }
 
-    protected void CreateSender()
+    protected virtual void CreateSender()
     {
         var options = new SenderOptions
         {
@@ -33,6 +34,11 @@ public abstract class Import
         sender = connection.CreateSenderChannel(options);
     }
 
+    protected virtual ISender CreateStatusSender() => connection.CreateSenderChannel(new SenderOptions
+    {
+        Name = queueName + "-imports", QueueType = QueueType.ExchangeFanout, QueueName = "imports"
+    });
+
     public virtual async Task Load(string[] args)
     {
         try
@@ -40,7 +46,8 @@ public abstract class Import
             using (HttpClient httpClient = new())
             {
                 using var request = new HttpRequestMessage(HttpMethod.Get, source);
-                using Stream contentStream = await (await GetResponse(httpClient, request)).Content.ReadAsStreamAsync(),
+                using var response = await GetResponse(httpClient, request);
+                using Stream contentStream = await response.Content.ReadAsStreamAsync(),
                 stream = new FileStream(file.Filepath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
                 await contentStream.CopyToAsync(stream);
             }
@@ -62,8 +69,16 @@ public abstract class Import
     protected static async Task<HttpResponseMessage> GetResponse(HttpClient client, HttpRequestMessage request)
     {
         var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-        return response;
+        try
+        {
+            response.EnsureSuccessStatusCode();
+            return response;
+        }
+        catch
+        {
+            response.Dispose();
+            throw;
+        }
     }
 
     protected void SendSource(IList<object> items, string url)
@@ -72,7 +87,7 @@ public abstract class Import
         var ambiguous = items.OfType<SourceRecord>().GroupBy(x => x.SourceMatchId).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
         if (ambiguous.Count > 0) throw new InvalidOperationException("Ambiguous repeated seasonal pairings; resolve source identity before import: " + string.Join(",", ambiguous));
         SendToQueue(items);
-        var statusSender = connection.CreateSenderChannel(new SenderOptions { Name = "imports", QueueType = QueueType.ExchangeFanout, QueueName = "imports" });
+        statusSender ??= CreateStatusSender();
         foreach (var group in items.OfType<SourceRecord>().GroupBy(x => new { x.SourceSeason, x.SourceFileHash, Division = x is Result result ? result.Division : ((Fixture)x).Division }))
         {
             var division = group.Key.Division;

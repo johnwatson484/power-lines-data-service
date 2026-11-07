@@ -1,47 +1,32 @@
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Models;
-using System.Text.RegularExpressions;
 
 namespace PowerLinesDataService.Imports.Readers;
 
 public class FixtureReader : IReader
 {
+    public List<string> Diagnostics { get; } = [];
+
     public IList<object> ReadToList(string filepath)
     {
-        List<Fixture> fixtures = new();
-
-        using (var reader = new StreamReader(filepath))
+        Diagnostics.Clear();
+        var fixtures = new List<object>();
+        using var csv = new SourceCsv(filepath);
+        while (csv.Next())
         {
-            var header = reader.ReadLine();
-            var headers = header.Split(',');
-
-            int homeAverage = Array.IndexOf(headers, "AvgH");
-            int drawAverage = Array.IndexOf(headers, "AvgD");
-            int awayAverage = Array.IndexOf(headers, "AvgA");
-
-            while (!reader.EndOfStream)
+            try
             {
-                var line = reader.ReadLine();
-                // Source file often contains unicode characters
-                line = Regex.Replace(line, @"[^\u0000-\u007F]", string.Empty);
-                var values = line.Split(',');
-
-                if (!string.IsNullOrEmpty(values[0].Trim()))
-                {
-                    fixtures.Add(new Fixture
-                    {
-                        Division = values[0].Trim(),
-                        Date = DateTime.Parse(values[1].Trim()).Add(TimeSpan.Parse(values[2])),
-                        HomeTeam = values[3].Trim(),
-                        AwayTeam = values[4].Trim(),
-                        HomeOddsAverage = homeAverage == -1 ? 0 : !string.IsNullOrEmpty(values[homeAverage].Trim()) ? decimal.Parse(values[homeAverage].Trim()) : 0,
-                        DrawOddsAverage = drawAverage == -1 ? 0 : !string.IsNullOrEmpty(values[drawAverage].Trim()) ? decimal.Parse(values[drawAverage].Trim()) : 0,
-                        AwayOddsAverage = awayAverage == -1 ? 0 : !string.IsNullOrEmpty(values[awayAverage].Trim()) ? decimal.Parse(values[awayAverage].Trim()) : 0
-                    });
-                }
+                var fixture = new Fixture { Division = csv.Required("Div"), Date = csv.Date(true), HomeTeam = csv.Required("HomeTeam"), AwayTeam = csv.Required("AwayTeam") };
+                if (fixture.HomeTeam == fixture.AwayTeam) throw new FormatException("Identical teams");
+                csv.Provenance(fixture, fixture.Division, fixture.Date, fixture.HomeTeam, fixture.AwayTeam);
+                var average = csv.Average(fixture);
+                fixture.HomeOddsAverage = average?.Home ?? 0; fixture.DrawOddsAverage = average?.Draw ?? 0; fixture.AwayOddsAverage = average?.Away ?? 0;
+                fixtures.Add(fixture);
             }
+            catch (FormatException ex) { Diagnostics.Add($"Row {csv.Row}: {ex.Message}"); }
         }
-
-        return fixtures.ToList<object>();
+        Diagnostics.AddRange(csv.Diagnostics);
+        foreach (var diagnostic in Diagnostics) Console.Error.WriteLine(diagnostic);
+        return fixtures;
     }
 }

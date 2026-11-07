@@ -1,6 +1,6 @@
 namespace PowerLinesDataService.Models;
 
-public class Fixture
+public class Fixture : SourceRecord
 {
     public string Division { get; set; }
     public DateTime Date { get; set; }

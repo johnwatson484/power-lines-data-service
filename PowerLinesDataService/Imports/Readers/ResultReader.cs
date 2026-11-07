@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using PowerLinesDataService.Common;
 using PowerLinesDataService.Models;
 
@@ -6,87 +5,41 @@ namespace PowerLinesDataService.Imports.Readers;
 
 public class ResultReader : IReader
 {
+    public List<string> Diagnostics { get; } = [];
+
     public IList<object> ReadToList(string filepath)
     {
-        List<Result> results = new();
-
-        using (var reader = new StreamReader(filepath))
+        Diagnostics.Clear();
+        var results = new List<object>();
+        using var csv = new SourceCsv(filepath);
+        while (csv.Next())
         {
-            var header = reader.ReadLine();
-            var headers = header.Split(',');
-
-            int time = Array.IndexOf(headers, "Time");
-
-            // The source dropped the Betbrain columns for AvgH/AvgD/AvgA part way through the 2018/19 season.
-            int homeAverage = FindColumn(headers, "AvgH", "BbAvH");
-            int drawAverage = FindColumn(headers, "AvgD", "BbAvD");
-            int awayAverage = FindColumn(headers, "AvgA", "BbAvA");
-
-            while (!reader.EndOfStream)
+            try
             {
-                var line = reader.ReadLine();
-
-                // Older seasons pad the file with trailing blank rows, which have no columns to insert into.
-                if (string.IsNullOrWhiteSpace(line))
+                var homeGoals = csv.Integer("FTHG") ?? csv.Integer("HG") ?? throw new FormatException("Missing full-time home goals");
+                var awayGoals = csv.Integer("FTAG") ?? csv.Integer("AG") ?? throw new FormatException("Missing full-time away goals");
+                var result = new Result
                 {
-                    continue;
-                }
-
-                // Source file often contains unicode characters
-                line = Regex.Replace(line, @"[^\u0000-\u007F]", string.Empty);
-                var values = line.Split(',');
-
-                if (time == -1)
-                {
-                    values = InsertIntoArray(values, 2, string.Empty);
-                }
-
-                if (values.Length > 6 && !string.IsNullOrEmpty(values[7]))
-                {
-                    results.Add(new Result
-                    {
-                        Division = values[0].Trim(),
-                        Date = DateTime.Parse(values[1].Trim()),
-                        HomeTeam = values[3].Trim(),
-                        AwayTeam = values[4].Trim(),
-                        FullTimeHomeGoals = int.Parse(values[5].Trim()),
-                        FullTimeAwayGoals = int.Parse(values[6].Trim()),
-                        FullTimeResult = values[7].Trim(),
-                        HalfTimeHomeGoals = values.Length > 8 && !string.IsNullOrEmpty(values[8].Trim()) ? int.Parse(values[8].Trim()) : 0,
-                        HalfTimeAwayGoals = values.Length > 8 && !string.IsNullOrEmpty(values[9].Trim()) ? int.Parse(values[9].Trim()) : 0,
-                        HalfTimeResult = values.Length > 8 && !string.IsNullOrEmpty(values[10].Trim()) ? values[10].Trim() : null,
-                        HomeOddsAverage = homeAverage == -1 ? 0 : !string.IsNullOrEmpty(values[homeAverage].Trim()) ? decimal.Parse(values[homeAverage].Trim()) : 0,
-                        DrawOddsAverage = drawAverage == -1 ? 0 : !string.IsNullOrEmpty(values[drawAverage].Trim()) ? decimal.Parse(values[drawAverage].Trim()) : 0,
-                        AwayOddsAverage = awayAverage == -1 ? 0 : !string.IsNullOrEmpty(values[awayAverage].Trim()) ? decimal.Parse(values[awayAverage].Trim()) : 0
-                    });
-                }
+                    Division = csv.Required("Div"), Date = csv.Date(false),
+                    HomeTeam = csv.Required("HomeTeam"), AwayTeam = csv.Required("AwayTeam"),
+                    FullTimeHomeGoals = homeGoals, FullTimeAwayGoals = awayGoals,
+                    FullTimeResult = csv.Get("FTR").Length > 0 ? csv.Get("FTR") : csv.Required("Res"),
+                    HalfTimeHomeGoals = csv.Integer("HTHG"), HalfTimeAwayGoals = csv.Integer("HTAG"),
+                    HalfTimeResult = csv.Get("HTR").Length > 0 ? csv.Get("HTR") : null
+                };
+                if (result.HomeTeam == result.AwayTeam || result.FullTimeResult != (homeGoals > awayGoals ? "H" : homeGoals < awayGoals ? "A" : "D"))
+                    throw new FormatException("Inconsistent result/teams");
+                csv.Provenance(result, result.Division, result.Date, result.HomeTeam, result.AwayTeam);
+                var average = csv.Average(result);
+                result.HomeOddsAverage = average?.Home ?? 0;
+                result.DrawOddsAverage = average?.Draw ?? 0;
+                result.AwayOddsAverage = average?.Away ?? 0;
+                results.Add(result);
             }
+            catch (FormatException ex) { Diagnostics.Add($"Row {csv.Row}: {ex.Message}"); }
         }
-
-        return results.ToList<object>();
-    }
-
-    private static int FindColumn(string[] headers, params string[] names)
-    {
-        foreach (var name in names)
-        {
-            int index = Array.IndexOf(headers, name);
-
-            if (index != -1)
-            {
-                return index;
-            }
-        }
-
-        return -1;
-    }
-
-    private static string[] InsertIntoArray(string[] array, int position, string value)
-    {
-        var values = array.ToList();
-
-        // A malformed row can have fewer columns than the insert position, e.g. a stray short line in the source file.
-        values.Insert(Math.Min(position, values.Count), value);
-        return values.ToArray();
+        Diagnostics.AddRange(csv.Diagnostics);
+        foreach (var diagnostic in Diagnostics) Console.Error.WriteLine(diagnostic);
+        return results;
     }
 }

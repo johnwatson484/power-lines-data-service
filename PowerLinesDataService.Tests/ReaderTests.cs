@@ -70,4 +70,49 @@ public class ReaderTests
         Assert.That(rows[0].SourceMatchId, Is.Not.EqualTo(rows[1].SourceMatchId));
         Assert.That(rows[0].SourceFileHash, Is.EqualTo(hash));
     }
+
+    [TestCase("E0-9394.csv.gz", 462)]
+    [TestCase("SC0-9495.csv.gz", 180)]
+    [TestCase("G1-0001.csv.gz", 240)]
+    [TestCase("D2-0405.csv.gz", 306)]
+    public void Historical_sources_keep_all_results_without_padding_diagnostics(string fixture, int count)
+    {
+        var file = Path.GetTempFileName();
+        try
+        {
+            using (var input = System.IO.File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "Fixtures", fixture)))
+            using (var gzip = new System.IO.Compression.GZipStream(input, System.IO.Compression.CompressionMode.Decompress))
+            using (var output = System.IO.File.Create(file)) gzip.CopyTo(output);
+            var reader = new ResultReader();
+            var rows = reader.ReadToList(file).Cast<Result>().ToList();
+            foreach (var row in rows) SourceIdentity.Attach(row, $"https://www.football-data.co.uk/mmz4281/{fixture.Split('-')[1][..4]}/{rows[0].Division}.csv");
+            Assert.That(rows.Count, Is.EqualTo(count));
+            Assert.That(reader.Diagnostics, Is.Empty);
+            Assert.That(rows.Select(x => x.SourceMatchId).Distinct().Count(), Is.EqualTo(count));
+        }
+        finally { System.IO.File.Delete(file); }
+    }
+
+    [Test]
+    public void Repeated_completed_pairings_have_distinct_stable_identities()
+    {
+        var (_, rows) = Parse("Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,FTR\nSC0,13/08/94,Aberdeen,Hearts,3,1,H\nSC0,31/12/94,Aberdeen,Hearts,2,0,H\n");
+        foreach (var row in rows) SourceIdentity.Attach(row, "https://www.football-data.co.uk/mmz4281/9495/SC0.csv");
+        Assert.That(rows[0].SourceMatchId, Is.Not.EqualTo(rows[1].SourceMatchId));
+        var (_, repeat) = Parse("Div,Date,HomeTeam,AwayTeam,FTHG,FTAG,FTR\nSC0,13/08/94,Aberdeen,Hearts,4,1,H\n");
+        SourceIdentity.Attach(repeat.Single(), rows[0].SourceUrl);
+        Assert.That(repeat.Single().SourceMatchId, Is.EqualTo(rows[0].SourceMatchId));
+        var fixtures = rows.Select(x => new Fixture { Division = x.Division, Date = x.Date, HomeTeam = x.HomeTeam, AwayTeam = x.AwayTeam, SourceSeason = x.SourceSeason }).ToList();
+        foreach (var fixture in fixtures) SourceIdentity.Attach(fixture, "https://www.football-data.co.uk/fixtures.csv");
+        Assert.That(fixtures[0].SourceMatchId, Is.EqualTo(fixtures[1].SourceMatchId));
+    }
+
+    [Test]
+    public void Legacy_score_aliases_and_preferred_team_headers_are_supported()
+    {
+        var (reader, rows) = Parse("Div,Date,HomeTeam,AwayTeam,HT,AT,HG,AG,Res\nG1,16/09/00,Olympiakos,Eth Asteras,Wrong,Names,6,0,H\n,,,,,,,,\n");
+        Assert.That(reader.Diagnostics, Is.Empty);
+        Assert.That(rows.Single().HomeTeam, Is.EqualTo("Olympiakos"));
+        Assert.That(rows.Single().FullTimeHomeGoals, Is.EqualTo(6));
+    }
 }

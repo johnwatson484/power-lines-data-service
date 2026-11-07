@@ -16,25 +16,38 @@ public class ResultImport(string source, IFile file, IConnection connection, str
         int lastSeason = GetLastSeasonYear(DateTime.Now);
 
         var failedSources = new List<string>();
+        var unavailableSources = new List<string>();
+        int importedSources = 0;
+        using var httpClient = new HttpClient();
         while (firstSeason < lastSeason)
         {
             foreach (var league in leagues)
             {
+                var url = string.Format(source, GetSeasonYears(firstSeason % 100), league);
                 try
                 {
-                    using (var httpClient = new HttpClient())
+                    try
                     {
-                        using var request = new HttpRequestMessage(HttpMethod.Get, string.Format(source, GetSeasonYears(firstSeason % 100), league));
-                        using Stream contentStream = await (await GetResponse(httpClient, request)).Content.ReadAsStreamAsync(),
+                        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                        using var response = await GetResponse(httpClient, request);
+                        using Stream contentStream = await response.Content.ReadAsStreamAsync(),
                         stream = new FileStream(file.Filepath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
                         await contentStream.CopyToAsync(stream);
                     }
-                    SendSource(file.ReadFileToList(), string.Format(source, GetSeasonYears(firstSeason % 100), league));
+                    catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+                    {
+                        Console.WriteLine($"Unavailable source {url}: {ex.Message}");
+                        unavailableSources.Add(url);
+                        continue;
+                    }
+                    Console.WriteLine($"Reading source {url}");
+                    SendSource(file.ReadFileToList(), url);
+                    importedSources++;
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error importing: {0}", ex);
-                    failedSources.Add($"{GetSeasonYears(firstSeason % 100)}/{league}");
+                    Console.WriteLine($"Error importing {url}: {ex}");
+                    failedSources.Add(url);
                 }
                 finally
                 {
@@ -44,13 +57,14 @@ public class ResultImport(string source, IFile file, IConnection connection, str
 
             firstSeason++;
         }
+        Console.WriteLine($"Results import summary: imported={importedSources}, unavailable={unavailableSources.Count}, failed={failedSources.Count}");
         if (failedSources.Count > 0) throw new InvalidOperationException("Failed source imports: " + string.Join(", ", failedSources));
         Console.WriteLine("Import complete");
     }
 
     private static string GetSeasonYears(int firstYear)
     {
-        return string.Format("{0}{1}", firstYear.ToString("D2"), (firstYear + 1).ToString("D2"));
+        return string.Format("{0}{1}", firstYear.ToString("D2"), ((firstYear + 1) % 100).ToString("D2"));
     }
 
     private static int GetFirstSeasonYear(DateTime currentDate, bool currentSeasonOnly = false)

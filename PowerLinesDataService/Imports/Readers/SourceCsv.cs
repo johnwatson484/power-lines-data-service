@@ -22,8 +22,14 @@ public sealed class SourceCsv : IDisposable
         parser = new TextFieldParser(path, Encoding.UTF8, true) { HasFieldsEnclosedInQuotes = true, TrimWhiteSpace = true };
         parser.SetDelimiters(",");
         var names = parser.ReadFields() ?? throw new FormatException("Missing CSV header");
+        // D2 2004/05 labels three unused Ladbrokes columns identically as "LB".
+        // They cannot identify a home/draw/away price and are not consumed by this reader.
         headers = names.Select((x, i) => (Name: x.Trim().TrimStart('\uFEFF'), Index: i))
-            .Where(x => x.Name.Length > 0).ToDictionary(x => x.Name, x => x.Index, StringComparer.OrdinalIgnoreCase);
+            .Where(x => x.Name.Length > 0 && !x.Name.Equals("LB", StringComparison.OrdinalIgnoreCase))
+            .ToDictionary(x => x.Name, x => x.Index, StringComparer.OrdinalIgnoreCase);
+        // Older Greek files use HT/AT for the home and away team names.
+        foreach (var (name, legacy) in new[] { ("HomeTeam", "HT"), ("AwayTeam", "AT") })
+            if (!headers.ContainsKey(name) && headers.TryGetValue(legacy, out var index)) headers[name] = index;
         foreach (var required in new[] { "Div", "Date", "HomeTeam", "AwayTeam" })
             if (!headers.ContainsKey(required)) throw new FormatException($"Missing header {required}");
     }
@@ -33,7 +39,12 @@ public sealed class SourceCsv : IDisposable
         while (!parser.EndOfData)
         {
             Row++;
-            try { values = parser.ReadFields() ?? []; return true; }
+            try
+            {
+                values = parser.ReadFields() ?? [];
+                if (values.All(string.IsNullOrWhiteSpace)) continue;
+                return true;
+            }
             catch (MalformedLineException ex) { Diagnostics.Add($"Row {Row}: malformed CSV: {ex.Message}"); }
         }
         return false;

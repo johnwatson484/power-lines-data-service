@@ -8,12 +8,6 @@ using Microsoft.Extensions.Hosting;
 using PowerLinesDataService.Options;
 using Microsoft.Extensions.Options;
 
-if (args.Contains("--stage"))
-{
-    PowerLinesDataService.Imports.Reconciliation.Stage(args);
-    return;
-}
-
 SetCulture();
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);

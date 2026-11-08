@@ -2,7 +2,7 @@
 
 # Power Lines Data Service
 
-A .NET 8 command-line importer for football fixtures, results and bookmaker prices from Football-Data CSV files. It publishes records to RabbitMQ for [Power Lines Web](https://github.com/johnwatson484/power-lines-web), which stores the data in PostgreSQL and generates forecasts. This repo owns ingestion; the forecasting models live in the web repo.
+A .NET 10 command-line importer for football fixtures, results and bookmaker prices from Football-Data CSV files. It publishes records to RabbitMQ for [Power Lines Web](https://github.com/johnwatson484/power-lines-web), which stores the data in PostgreSQL and generates forecasts. This repo owns ingestion; the forecasting models live in the web repo.
 
 ## How it works
 
@@ -53,7 +53,7 @@ Fixture match identity hashes season, division and the home/away pairing to supp
 ## Dependencies
 
 - Docker Engine/Desktop with Docker Compose v2 or later for the container workflow (`docker compose`).
-- Alternatively, the .NET 8 SDK for local development and tests.
+- Alternatively, the .NET 10 SDK for local development and tests.
 - RabbitMQ for imports; development Compose supplies `rabbitmq:3-management-alpine`.
 - Outbound HTTPS to Football-Data and a writable OS temporary directory for source downloads.
 - Network access to NuGet and Microsoft/container registries when restoring or building. NuGet dependencies are declared in the project files: .NET Hosting, Newtonsoft.Json and `PowerLinesMessaging` 3.1.0; tests use NUnit.
@@ -163,7 +163,7 @@ NUnit tests exercise current and historical CSV schemas, missing/malformed field
 To test using the SDK container without installing .NET locally:
 
 ```sh
-docker run --rm -v "$PWD:/src" -w /src mcr.microsoft.com/dotnet/sdk:8.0 \
+docker run --rm -v "$PWD:/src" -w /src mcr.microsoft.com/dotnet/sdk:10.0 \
   dotnet test PowerLinesDataService.Tests --configuration Release
 ```
 

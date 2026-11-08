@@ -8,9 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DotNetEnv" Version="3.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="PowerLinesMessaging" Version="3.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove=".env;.env.*" />
+    <None Remove=".env;.env.*" />
+  </ItemGroup>
 </Project>

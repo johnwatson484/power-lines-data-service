@@ -21,3 +21,10 @@ production-values.yaml
 
 # Local planning and rollout notes.
 /docs/PARSER_RECONCILIATION_ROLLOUT.md
+
+# Local environment and generated reports
+.env
+.env.*
+!.env.example
+TestResults/
+coverage/

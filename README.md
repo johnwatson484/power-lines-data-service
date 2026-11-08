@@ -158,4 +158,4 @@ dotnet test --filter 'TestCategory=Integration'
 
 Unit tests cover historical/current CSV schemas, source identities, prices and import failures with checked-in fixtures and local HTTP sources. Integration tests use RabbitMQ Testcontainers and local CSV sources to verify record and completion-message publication through `PowerLinesMessaging`, without live Football-Data downloads. Ports are assigned dynamically; containers are cleaned up after tests. Missing Docker fails integration setup rather than skipping it. Tests do not load development `.env` files.
 
-Projects write build outputs to repository-level `bin/` and `obj/`. PRs and the `master` publishing workflow call the same native restore/build/test workflow, which uploads TRX and coverage artifacts. Image publishing and GitHub releases remain restricted to `master`; PR checks need no publishing secrets.
+Projects write build outputs to repository-level `bin/` and `obj/`. PRs and the `main` publishing workflow call the same native restore/build/test workflow, which uploads TRX and coverage artifacts. Image publishing and GitHub releases remain restricted to `main`; PR checks need no publishing secrets.

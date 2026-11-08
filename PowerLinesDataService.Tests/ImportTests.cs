@@ -124,7 +124,7 @@ public class ImportTests
         protected override ISender CreateStatusSender() { StatusSenderCreations++; return Statuses; }
     }
 
-    sealed class LocalSources : IDisposable
+    internal sealed class LocalSources : IDisposable
     {
         readonly HttpListener listener = new();
         readonly Task server;

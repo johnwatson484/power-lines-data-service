@@ -52,64 +52,63 @@ Fixture match identity hashes season, division and the home/away pairing to supp
 
 ## Dependencies
 
-- Docker Engine/Desktop with Docker Compose v2 or later for the container workflow (`docker compose`).
-- Alternatively, the .NET 10 SDK for local development and tests.
-- RabbitMQ for imports; development Compose supplies `rabbitmq:3-management-alpine`.
-- Outbound HTTPS to Football-Data and a writable OS temporary directory for source downloads.
-- Network access to NuGet and Microsoft/container registries when restoring or building. NuGet dependencies are declared in the project files: .NET Hosting, Newtonsoft.Json and `PowerLinesMessaging` 3.1.0; tests use NUnit.
-- The web app and its PostgreSQL database to consume and display imported records. Neither is started by this repo's Compose files.
+- .NET 10 SDK (selected by `global.json`).
+- Docker Engine/Desktop and Compose 2.24+ for RabbitMQ and Testcontainers integration tests.
+- Bash for scripts and VS Code tasks (use WSL on Windows), and the C# extension for native debugging.
+- Registry/NuGet access for builds; outbound HTTPS to Football-Data for real imports.
+- A writable OS temporary directory. This app has no database or HTTP listener.
 
-## Run both repos together
-
-Keep the clones in sibling directories. Let the web repo own the shared RabbitMQ service and `power-lines` Docker network, then run this importer without starting a second broker:
+## Run natively
 
 ```sh
-# In ../power-lines-web: starts the web app, PostgreSQL and RabbitMQ.
-cd ../power-lines-web
-docker compose up --build -d
-
-# Back in this repo: build the development importer.
-cd ../power-lines-data-service
-docker compose build power-lines-data-service
-
-# Import historical results first, then current fixtures.
-docker compose run --rm --no-deps --entrypoint dotnet power-lines-data-service \
-  run --project ./PowerLinesDataService -- --results --all
-docker compose run --rm --no-deps --entrypoint dotnet power-lines-data-service \
-  run --project ./PowerLinesDataService -- --fixtures
-```
-
-The development override connects the importer to `power-lines-message` on the shared network. Both repos use Compose project name `power-lines` and container name `power-lines-message`; use one broker owner. See the [web README](https://github.com/johnwatson484/power-lines-web#readme) for web URLs, database setup, timezone configuration and forecast availability.
-
-## Develop this repo on its own
-
-```sh
-docker compose up --build -d
-./scripts/run-service --results
+cp .env.example .env
+dotnet restore
+./scripts/local --results
 ./scripts/run-service --fixtures
 ```
 
-Compose automatically combines `docker-compose.yaml` and `docker-compose.override.yaml`, creates the `power-lines` network, starts RabbitMQ and runs the importer under `dotnet watch`. No import flags are supplied to the watched process, so use `scripts/run-service` to launch an import inside the running development container. Source files are bind-mounted for rebuilds.
-
-RabbitMQ is reachable from the host at `localhost:5672`; its management UI is at `http://localhost:15672`, with development credentials `rabbitmq` / `rabbitmq`. Stop the development services with `docker compose down`.
-
-For debugging, use the Docker attach configuration in [.vscode/launch.json](.vscode/launch.json) with the VS Code C# debugger. The development image includes `/vsdbg/vsdbg`; select the importer process when prompted.
-
-### Run locally with .NET
-
-Start RabbitMQ first (for example, `docker compose up -d power-lines-message`), then supply all six message settings because this app has no checked-in `appsettings.json`:
+`local` starts RabbitMQ and waits for health, then runs the requested import on the host. `run-service` runs once against the configured broker and forwards all import flags. It does not start dependencies in native mode; use `services-up` or `local` first. Direct .NET execution works too:
 
 ```sh
-export MESSAGE__HOST=localhost
-export MESSAGE__PORT=5672
-export MESSAGE__USERNAME=rabbitmq
-export MESSAGE__PASSWORD=rabbitmq
-export MESSAGE__FIXTUREQUEUE=fixtures
-export MESSAGE__RESULTQUEUE=results
-
-dotnet run --project PowerLinesDataService -- --results
+./scripts/services-up
 dotnet run --project PowerLinesDataService -- --fixtures
 ```
+
+RabbitMQ listens at `localhost:5672`, with management UI `http://localhost:15672` and example credentials `rabbitmq` / `rabbitmq`. VS Code provides separate import, dependency, build, test and watch tasks. **Dev: native** debugs a fixture import after dependencies are started.
+
+### Run an import in Docker
+
+```sh
+./scripts/run-service --docker --results
+./scripts/run-service --docker --fixtures
+```
+
+Docker mode starts/waits for RabbitMQ, builds the development app and uses a disposable `docker compose --profile app run --rm --no-deps` container. The importer is a one-shot command, with no idle service, automatic startup import or scheduler. Plain `docker compose up -d` starts only the broker.
+
+### Shared RabbitMQ and standalone use
+
+Each app repo defines the same `power-lines-message` service in Compose project `power-lines`, on network `power-lines`. Either repo can start independently; starting the other sequentially reuses the broker. Keep `Message__Username`, `Message__Password`, `Message__Port` and `RABBITMQ_MANAGEMENT_PORT` identical in both `.env` files. Container apps use the broker's internal hostname and port automatically. The `fixtures`, `results` and `imports` fanout exchanges are unchanged.
+
+Use [Power Lines Core](https://github.com/johnwatson484/power-lines-core) for sibling clones and the VS Code workspace. Core calls each repo's startup commands sequentially and owns no dependencies. Start web and wait for its “Consuming fixtures, results and import statuses” log before importing, so subscription queues exist. Import results before fixtures when building forecasting history.
+
+`./scripts/services-down` stops this repo's dependency containers, including shared RabbitMQ, and affects both apps. It retains containers, the shared network and stored data. Stop native apps with Ctrl+C or terminate their VS Code tasks. Do not use `--remove-orphans`: the other repo's services belong to the same project. Web's `power-lines_postgres_data` volume is retained; remove it only when deliberately resetting development data.
+
+### Run both repos together
+
+With sibling clones, start web first:
+
+```sh
+cd ../power-lines-web
+cp -n .env.example .env
+./scripts/local
+# In another terminal after web consumers are ready:
+cd ../power-lines-data-service
+cp -n .env.example .env
+./scripts/local --results --all
+./scripts/run-service --fixtures
+```
+
+Core's workspace offers this native web process alongside a ready importer terminal and explicit import tasks.
 
 ### Import flags
 
@@ -123,48 +122,40 @@ Flags can be combined, for example `./scripts/run-service --results --all --fixt
 
 ### Production image
 
-The base Compose file builds only the production importer; it does not supply a broker or message configuration:
-
 ```sh
-docker compose -f docker-compose.yaml build
+docker build --target production -t power-lines-data-service .
 docker run --rm --env-file /path/to/import.env power-lines-data-service --results
 ```
 
-Create `import.env` using the six `MESSAGE__...` settings below and a broker hostname reachable from the container (`localhost` would refer to that container). The production image runs the compiled DLL once and exits. Schedule repeated imports externally if needed.
+Provide a reachable broker in `import.env`. The production image runs the compiled DLL once as a non-root user and preserves ICU support for the importer's `en-GB` culture. Schedule recurring imports externally.
 
-## Environment variables and defaults
+## Environment variables
 
-The .NET configuration provider maps `__` to nested section keys and treats key casing as insignificant. Environment variables override JSON configuration if supplied; command-line configuration has higher precedence. A shell `.env` file is not loaded by the .NET app automatically. Compose's interpolation `.env` also does not inject arbitrary settings unless the Compose service declares them; use explicit `environment`/`env_file` entries or `docker run --env-file`.
+Copy `.env.example` to `.env`. The app loads this optional repository-root file before building the host, from either the repo root or app project directory, without searching unrelated ancestors. Existing environment variables override file values; command-line configuration has highest precedence. Local env files are excluded from Git, Docker build contexts and published output. Deployment environments need no `.env` file.
 
-| Environment variable | Default without configuration | Development Compose value | Purpose |
-| --- | --- | --- | --- |
-| `MESSAGE__HOST` | null/unset | `power-lines-message` | RabbitMQ hostname. Use `localhost` for a host process. |
-| `MESSAGE__PORT` | `0` | `5672` | RabbitMQ AMQP port. |
-| `MESSAGE__USERNAME` | null/unset | `rabbitmq` | Broker username. |
-| `MESSAGE__PASSWORD` | null/unset | `rabbitmq` | Broker password. |
-| `MESSAGE__FIXTUREQUEUE` | null/unset | `fixtures` | Fixture fanout exchange; match the web consumer. |
-| `MESSAGE__RESULTQUEUE` | null/unset | `results` | Result fanout exchange; match the web consumer. |
-| `DOTNET_ENVIRONMENT` | `Production` | Unset | Generic Host environment, used to select optional `appsettings.{Environment}.json`. |
-| `ASPNETCORE_ENVIRONMENT` | Unset | Image sets `development`; production image sets `production` | Present in the Dockerfiles, but this console app uses the Generic Host's `DOTNET_ENVIRONMENT` setting. |
-| `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT` | Runtime/image default | SDK image default | Production image sets `false` and installs ICU for the app's `en-GB` culture. |
+.NET maps `__` to nested keys. The example provides:
 
-The null/zero message properties are unconfigured CLR values, not working connection defaults; set all six for real imports. Source URLs, the league list and the `imports` exchange are defined in code, rather than environment settings.
+| Variable | Native value | Purpose |
+| --- | --- | --- |
+| `DOTNET_ENVIRONMENT` | `Development` | Generic Host environment |
+| `Message__Host` | `localhost` | RabbitMQ host; overridden to `power-lines-message` for Docker |
+| `Message__Port` | `5672` | Native AMQP port; Docker always uses internal port 5672 |
+| `Message__Username` / `Message__Password` | `rabbitmq` / `rabbitmq` | App and development broker credentials |
+| `Message__FixtureQueue` / `Message__ResultQueue` | `fixtures` / `results` | Fanout exchanges shared with web |
+| `RABBITMQ_MANAGEMENT_PORT` | `15672` | Compose management UI port |
 
-The RabbitMQ development container also sets `RABBITMQ_DEFAULT_USER=rabbitmq`, `RABBITMQ_DEFAULT_PASS=rabbitmq`, `RABBITMQ_DEFAULT_VHOST=/` and `RABBITMQ_ERLANG_COOKIE=rabbitmq`. These configure the broker, not the importer. Change the Compose entries and matching app credentials together when using other credentials.
+Without configuration the message options have null/zero CLR values, so use the example file for real imports. Source URLs, divisions and the `imports` exchange remain defined in code. Compose passes `.env` through `env_file` for the app and overrides Docker hostnames. Its broker definition matches web's.
 
-## Test
+## Test and CI
 
 ```sh
-dotnet test PowerLinesDataService.Tests --configuration Release
+dotnet test --configuration Release --collect:"XPlat Code Coverage"
+# No Docker required:
+dotnet test --filter 'TestCategory!=Integration'
+# Real messaging package against disposable RabbitMQ:
+dotnet test --filter 'TestCategory=Integration'
 ```
 
-NUnit tests exercise current and historical CSV schemas, missing/malformed fields, price provenance, source identities, repeated pairings and import failure handling. Checked-in compressed source fixtures and test doubles make the suite independent of RabbitMQ, PostgreSQL and live source downloads. The PR workflow runs this command.
+Unit tests cover historical/current CSV schemas, source identities, prices and import failures with checked-in fixtures and local HTTP sources. Integration tests use RabbitMQ Testcontainers and local CSV sources to verify record and completion-message publication through `PowerLinesMessaging`, without live Football-Data downloads. Ports are assigned dynamically; containers are cleaned up after tests. Missing Docker fails integration setup rather than skipping it. Tests do not load development `.env` files.
 
-To test using the SDK container without installing .NET locally:
-
-```sh
-docker run --rm -v "$PWD:/src" -w /src mcr.microsoft.com/dotnet/sdk:10.0 \
-  dotnet test PowerLinesDataService.Tests --configuration Release
-```
-
-Both projects put build outputs under the repository-level `bin/` and `obj/` directories via `Directory.Build.props`. The `master` build workflow publishes production images to Docker Hub and creates a GitHub release using the project version.
+Projects write build outputs to repository-level `bin/` and `obj/`. PRs and the `master` publishing workflow call the same native restore/build/test workflow, which uploads TRX and coverage artifacts. Image publishing and GitHub releases remain restricted to `master`; PR checks need no publishing secrets.

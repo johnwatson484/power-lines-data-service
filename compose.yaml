@@ -1,0 +1,54 @@
+name: power-lines
+
+services:
+  power-lines-data-service:
+    profiles: [app]
+    build:
+      context: .
+      target: development
+    image: power-lines-data-service
+    container_name: power-lines-data-service
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      Message__Host: power-lines-message
+      Message__Port: 5672
+      Message__Username: ${Message__Username:-rabbitmq}
+      Message__Password: ${Message__Password:-rabbitmq}
+      Message__FixtureQueue: ${Message__FixtureQueue:-fixtures}
+      Message__ResultQueue: ${Message__ResultQueue:-results}
+    volumes:
+      - ./PowerLinesDataService:/home/dotnet/PowerLinesDataService
+    networks:
+      - power-lines
+    depends_on:
+      power-lines-message:
+        condition: service_healthy
+
+  power-lines-message:
+    image: rabbitmq:3-management-alpine
+    container_name: power-lines-message
+    hostname: power-lines-message
+    environment:
+      RABBITMQ_ERLANG_COOKIE: rabbitmq
+      RABBITMQ_DEFAULT_USER: ${Message__Username:-rabbitmq}
+      RABBITMQ_DEFAULT_PASS: ${Message__Password:-rabbitmq}
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      - "${Message__Port:-5672}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+    networks:
+      - power-lines
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 2s
+      retries: 30
+      start_period: 5s
+      timeout: 5s
+
+networks:
+  power-lines:
+    driver: bridge
+    name: power-lines
